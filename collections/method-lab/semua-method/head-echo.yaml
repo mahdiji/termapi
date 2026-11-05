@@ -1,0 +1,15 @@
+id: head-echo
+name: HEAD echo (tanpa body)
+method: HEAD
+url: http://localhost:8084/api/echo
+params_list:
+    - key: ping
+      value: "1"
+headers_list:
+    - key: Accept
+      value: application/json
+body_spec:
+    type: none
+auth:
+    type: none
+    add_to: header

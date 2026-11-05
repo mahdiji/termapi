@@ -1,0 +1,15 @@
+id: testing-bass
+name: testing/bass
+method: GET
+url: localhost:8081/methods/get
+params_list:
+    - {}
+headers_list:
+    - {}
+body_spec:
+    type: none
+auth:
+    type: none
+    add_to: header
+cookies:
+    - {}

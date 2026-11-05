@@ -1,0 +1,21 @@
+id: put-echo
+name: PUT echo (ganti data penuh)
+method: PUT
+url: http://localhost:8084/api/echo
+headers_list:
+    - key: Accept
+      value: application/json
+    - key: Content-Type
+      value: application/json
+body_spec:
+    type: json
+    raw: |-
+        {
+          "id": "user_101",
+          "name": "Tester",
+          "role": "developer",
+          "active": true
+        }
+auth:
+    type: none
+    add_to: header

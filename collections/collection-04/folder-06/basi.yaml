@@ -1,0 +1,15 @@
+id: basi
+name: basi
+method: GET
+url: ""
+params_list:
+    - {}
+headers_list:
+    - {}
+body_spec:
+    type: json
+    raw: sdsd
+auth:
+    type: none
+cookies:
+    - {}

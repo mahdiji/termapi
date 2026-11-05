@@ -1,0 +1,13 @@
+id: 2-get-profile-with-chained-token
+name: 2. Get Profile with Chained Token
+method: POST
+url: http://localhost:8080/login
+headers:
+    Accept: application/json
+    Authorization: Bearer {{token}}
+body: |+
+    {
+      "username":"admin",
+      "password":"password123"
+    }
+

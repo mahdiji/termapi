@@ -1,0 +1,4 @@
+id: local
+name: local
+method: GET
+url: localhost:8080/dashboard

@@ -1,0 +1,1350 @@
+<!doctype html>
+<html lang="id" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>TermAPI — Dokumentasi Lengkap</title>
+  <meta name="description" content="Dokumentasi lengkap TermAPI: TUI API client berbasis Go untuk HTTP, WebSocket, dan gRPC. Panduan instalasi, koleksi YAML, environment, history, diff viewer, batch runner, dan referensi shortcut.">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <div id="progress" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <button class="icon-btn" id="menu-toggle" type="button" aria-label="Buka navigasi" aria-expanded="false" aria-controls="sidebar">☰</button>
+    <a class="brand" href="#ringkasan">
+      <span class="brand-mark">T</span>
+      <span>TermAPI</span>
+    </a>
+    <span class="brand-sub">Dokumentasi</span>
+    <div class="topbar-spacer"></div>
+    <span class="chip hide-mobile"><span class="dot"></span> Go 1.27 · Bubble Tea v2</span>
+    <div class="topbar-actions">
+      <button class="icon-btn" id="theme-toggle" type="button">Terang</button>
+      <button class="icon-btn" type="button" onclick="window.print()">Cetak / PDF</button>
+    </div>
+  </header>
+
+  <div class="shell">
+    <aside class="sidebar" id="sidebar" aria-label="Navigasi dokumentasi">
+      <div class="search-wrap">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+          <input id="doc-search" type="search" placeholder="Cari dokumentasi..." autocomplete="off" spellcheck="false" aria-label="Cari dokumentasi">
+          <span class="search-hint">/</span>
+        </div>
+      </div>
+      <nav class="nav-scroll" id="nav-scroll">
+        <div class="nav-group">
+          <div class="nav-title">Mulai</div>
+          <a class="nav-link" href="#ringkasan"><span class="num">01</span> Ringkasan</a>
+          <a class="nav-link" href="#fitur"><span class="num">02</span> Fitur utama</a>
+          <a class="nav-link" href="#instalasi"><span class="num">03</span> Instalasi &amp; build</a>
+          <a class="nav-link" href="#quickstart"><span class="num">04</span> Mulai cepat</a>
+        </div>
+        <div class="nav-group">
+          <div class="nav-title">Dasar</div>
+          <a class="nav-link" href="#antarmuka"><span class="num">05</span> Anatomi antarmuka</a>
+          <a class="nav-link" href="#koleksi"><span class="num">06</span> Collections &amp; YAML</a>
+          <a class="nav-link" href="#variabel"><span class="num">07</span> Variabel &amp; template</a>
+          <a class="nav-link" href="#request"><span class="num">08</span> Request editor</a>
+          <a class="nav-link" href="#response"><span class="num">09</span> Response viewer</a>
+          <a class="nav-link" href="#keamanan"><span class="num">10</span> Keamanan &amp; Scope</a>
+        </div>
+        <div class="nav-group">
+          <div class="nav-title">Fitur</div>
+          <a class="nav-link" href="#history"><span class="num">11</span> History</a>
+          <a class="nav-link" href="#diff"><span class="num">12</span> Diff Viewer</a>
+          <a class="nav-link" href="#batch"><span class="num">13</span> Batch runner</a>
+          <a class="nav-link" href="#wire"><span class="num">14</span> Wire inspector</a>
+          <a class="nav-link" href="#scope"><span class="num">15</span> Global Scope</a>
+          <a class="nav-link" href="#environment"><span class="num">16</span> Environments</a>
+        </div>
+        <div class="nav-group">
+          <div class="nav-title">Referensi</div>
+          <a class="nav-link" href="#shortcuts"><span class="num">17</span> Semua shortcut</a>
+          <a class="nav-link" href="#konfigurasi"><span class="num">18</span> Konfigurasi &amp; file</a>
+          <a class="nav-link" href="#format"><span class="num">19</span> Format request</a>
+          <a class="nav-link" href="#arsitektur"><span class="num">20</span> Arsitektur</a>
+          <a class="nav-link" href="#pengembangan"><span class="num">21</span> Pengembangan</a>
+          <a class="nav-link" href="#troubleshooting"><span class="num">22</span> Troubleshooting</a>
+          <a class="nav-link" href="#batasan"><span class="num">23</span> Batasan saat ini</a>
+          <a class="nav-link" href="#faq"><span class="num">24</span> FAQ</a>
+        </div>
+        <div class="nav-empty">Tidak ada hasil. Coba kata kunci lain.</div>
+      </nav>
+      <div class="sidebar-foot">
+        <span><kbd>/</kbd> cari</span>
+        <span><kbd>Esc</kbd> reset</span>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="content-inner">
+
+        <section class="hero" aria-labelledby="hero-title">
+          <span class="eyebrow">TUI API Client · Local-first</span>
+          <h1 id="hero-title">TermAPI,<br><span>API client di terminal.</span></h1>
+          <p class="lead">TermAPI adalah klien API berbasis terminal yang dibangun dengan Go dan Charmbracelet Bubble Tea. Kelola collection sebagai YAML, simpan environment dan history secara lokal, bandingkan response antar-run, jalankan batch, serta inspeksi WebSocket dan gRPC — tanpa meninggalkan terminal.</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#quickstart">Mulai dalam 5 menit →</a>
+            <a class="btn" href="#shortcuts">Lihat shortcut</a>
+            <a class="btn" href="#arsitektur">Arsitektur</a>
+          </div>
+          <div class="hero-stats">
+            <div class="stat"><strong>7</strong><span>HTTP method</span></div>
+            <div class="stat"><strong>8</strong><span>Body type</span></div>
+            <div class="stat"><strong>4</strong><span>Auth scheme</span></div>
+            <div class="stat"><strong>SQLite</strong><span>History lokal</span></div>
+            <div class="stat"><strong>WS + gRPC</strong><span>Wire inspector</span></div>
+          </div>
+        </section>
+
+        <!-- 01 -->
+        <section class="doc-section" id="ringkasan" data-title="Ringkasan TermAPI" data-keywords="apa itu termapi pengenalan overview tui api client go bubbletea postman insomnia curl terminal">
+          <span class="section-kicker">01 · MULAI</span>
+          <h2>Ringkasan<a class="anchor" href="#ringkasan" aria-label="Tautan bagian">#</a></h2>
+          <p><strong>TermAPI</strong> adalah aplikasi TUI (<em>terminal user interface</em>) untuk mengirim dan memeriksa request HTTP, memantau koneksi WebSocket/gRPC, menjalankan kumpulan request, dan menyimpan riwayat response. Semua data proyek disimpan di dalam folder proyek Anda:</p>
+          <div class="grid">
+            <div class="card"><div class="ico">$</div><h4>Terminal-native</h4><p>Keyboard-first, mouse-friendly, dan tetap ringan. Cocok untuk sesi SSH, container, atau mesin tanpa GUI.</p></div>
+            <div class="card"><div class="ico">Y</div><h4>Collections sebagai YAML</h4><p>Request dapat dibaca, di-diff, dan di-commit seperti source code. Tidak ada format biner atau database tersembunyi.</p></div>
+            <div class="card"><div class="ico">DB</div><h4>History di SQLite</h4><p>Setiap eksekusi disimpan lokal bersama variabel yang ditangkap dari response JSON.</p></div>
+            <div class="card"><div class="ico">Δ</div><h4>Diff response</h4><p>Bandingkan baseline vs response terbaru dari request yang sama, atau pilih baseline lain secara manual.</p></div>
+          </div>
+          <div class="callout tip">
+            <span class="label">Cocok untuk</span>
+            Debugging API, verifikasi setelah deploy, eksplorasi endpoint, uji alur login → ambil token → panggil endpoint, serta monitoring WebSocket/gRPC sederhana.
+          </div>
+          <h3>Bukan apa</h3>
+          <ul class="xlist">
+            <li>Bukan aplikasi web atau layanan cloud; tidak ada akun, sinkronisasi, atau telemetry.</li>
+            <li>Bukan pengganti penuh Postman/Insomnia untuk scripting, mock server terkelola, atau kolaborasi tim.</li>
+            <li>Bukan HTTP/2 atau HTTP/3 client dengan pengaturan penuh; fokusnya alur kerja terminal yang cepat.</li>
+          </ul>
+        </section>
+
+        <!-- 02 -->
+        <section class="doc-section" id="fitur" data-title="Fitur utama TermAPI" data-keywords="fitur features daftar kemampuan http websocket grpc collection environment history diff batch scope auth body response search">
+          <span class="section-kicker">02 · MULAI</span>
+          <h2>Fitur utama<a class="anchor" href="#fitur" aria-label="Tautan bagian">#</a></h2>
+          <div class="grid">
+            <div class="card"><div class="ico">↗</div><h4>HTTP client lengkap</h4><p>GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD. Params, headers, cookies, body, auth, redirect, dan retry untuk request idempoten.</p></div>
+            <div class="card"><div class="ico">{} </div><h4>Body &amp; auth beragam</h4><p>JSON, XML, text, form, multipart (termasuk file), binary, GraphQL. Auth Bearer, Basic, dan API Key (header/query).</p></div>
+            <div class="card"><div class="ico">⌕</div><h4>Response viewer</h4><p>Pretty/Raw/Preview, filter <code>gjson</code>, pencarian teks, seleksi baris, copy, line number, scrollbar.</p></div>
+            <div class="card"><div class="ico">▤</div><h4>Collections</h4><p>Folder bertingkat, pembuatan collection/request, pencarian file, penyimpanan atomik, dan trash untuk pemulihan.</p></div>
+            <div class="card"><div class="ico">{{ }}</div><h4>Variabel</h4><p><code>{{KEY}}</code> di URL, params, headers, cookies, body, dan auth. Environment + global scope + session variables.</p></div>
+            <div class="card"><div class="ico">↺</div><h4>Chaining</h4><p>Batch mode chaining mengambil nilai JSON dari response dan menyuntikkannya ke request berikutnya.</p></div>
+            <div class="card"><div class="ico">∑</div><h4>Batch runner</h4><p>Jalankan seluruh folder secara paralel atau berurutan, atur kedalaman folder, retry, dan lihat hasil per request.</p></div>
+            <div class="card"><div class="ico">Δ</div><h4>Diff viewer</h4><p>Bandingkan body response baseline vs terbaru per method+URL, pilih baseline lain, mode side-by-side atau unified.</p></div>
+            <div class="card"><div class="ico">◈</div><h4>Wire inspector</h4><p>Monitor WebSocket dan gRPC: event TX/RX, throughput, RTT, filter, inspector payload, dan export sesi.</p></div>
+            <div class="card"><div class="ico">⛨</div><h4>Scope allowlist</h4><p>Kredensial diblokir jika origin tidak ada di allowlist. Redirect juga diperiksa agar tidak bocor ke host lain.</p></div>
+            <div class="card"><div class="ico">▦</div><h4>History lokal</h4><p>Cari dan tinjau run lama, lihat response, hapus, dan jadikan sumber baseline diff.</p></div>
+            <div class="card"><div class="ico">⌨</div><h4>Keyboard &amp; mouse</h4><p>Shortcut konsisten di setiap layar, ditambah klik, drag selection, dan scroll wheel.</p></div>
+          </div>
+        </section>
+
+        <!-- 03 -->
+        <section class="doc-section" id="instalasi" data-title="Instalasi dan build" data-keywords="install instalasi build compile go build cgo sqlite gcc requirement kebutuhan terminal size nerd font run menjalankan biner">
+          <span class="section-kicker">03 · MULAI</span>
+          <h2>Instalasi &amp; build<a class="anchor" href="#instalasi" aria-label="Tautan bagian">#</a></h2>
+          <h3>Kebutuhan</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Kebutuhan</th><th>Keterangan</th></tr></thead>
+              <tbody>
+                <tr><td>Go</td><td><code>go 1.27.1</code> sesuai <code>go.mod</code>. Disarankan versi yang sama atau lebih baru.</td></tr>
+                <tr><td>CGO + compiler C</td><td>Dibutuhkan <code>github.com/mattn/go-sqlite3</code>. Di Linux: <code>gcc</code>/<code>build-essential</code>. Pastikan <code>CGO_ENABLED=1</code>.</td></tr>
+                <tr><td>Terminal</td><td>Minimal <strong>105 × 32</strong> sel. Layar lebih kecil akan menampilkan peringatan. Wire inspector minimal 70 × 20.</td></tr>
+                <tr><td>Font</td><td>Nerd Font opsional. Icon memiliki fallback ASCII, tetapi tampilan lebih rapi dengan Nerd Font.</td></tr>
+                <tr><td>Izin filesystem</td><td>Aplikasi menulis <code>collections/</code> dan <code>.termapi/</code> di root proyek.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>Build binary</h3>
+          <p>Jalankan dari root proyek (folder yang berisi <code>go.mod</code>):</p>
+          <pre><code>cd TermAPI
+go mod download
+CGO_ENABLED=1 go build -o termapi ./cmd/termapi
+./termapi</code></pre>
+          <p>Alternatif tanpa menghasilkan binary permanen:</p>
+          <pre><code>go run ./cmd/termapi</code></pre>
+          <div class="callout warn">
+            <span class="label">Penting: lokasi kerja</span>
+            TermAPI mencari folder proyek dengan menelusuri ke atas sampai menemukan <code>go.mod</code>. Jika dijalankan di luar proyek Go, folder kerja saat ini dianggap root. History, environment, dan konfigurasi selalu mengarah ke root tersebut, sedangkan collections dapat dioverride dengan <code>TERMAPI_COLLECTIONS_DIR</code>.
+          </div>
+          <h3>Build komponen pendukung</h3>
+          <pre><code># Mock server WebSocket + gRPC untuk uji Wire Inspector
+CGO_ENABLED=1 go build -o mockserver ./cmd/mockserver
+./mockserver
+
+# Demo Wire Inspector saja
+go run ./cmd/wirescreen-demo ws://localhost:8080/ws
+
+# Echo server WebSocket sederhana
+go run ./server3</code></pre>
+          <h3>Verifikasi</h3>
+          <pre><code>go vet ./...
+go test ./...</code></pre>
+        </section>
+
+        <!-- 04 -->
+        <section class="doc-section" id="quickstart" data-title="Mulai cepat" data-keywords="quickstart mulai cepat tutorial pertama request send save history diff scope environment ctrl+n ctrl+s ctrl+o ctrl+d">
+          <span class="section-kicker">04 · MULAI</span>
+          <h2>Mulai cepat<a class="anchor" href="#quickstart" aria-label="Tautan bagian">#</a></h2>
+          <div class="flow">
+            <div class="flow-step"><strong>Buka aplikasi</strong>Jalankan <code>./termapi</code> dari root proyek.</div>
+            <div class="flow-step"><strong>Buat request</strong><kbd>Ctrl</kbd>+<kbd>N</kbd>, pilih New Request, tentukan nama, folder, dan method.</div>
+            <div class="flow-step"><strong>Isi URL</strong>Ketik URL di bar, atau pilih request yang sudah ada dari sidebar.</div>
+            <div class="flow-step"><strong>Kirim</strong><kbd>Enter</kbd> di URL bar atau klik tombol <strong>Send</strong>.</div>
+            <div class="flow-step"><strong>Simpan</strong><kbd>Ctrl</kbd>+<kbd>S</kbd> untuk menyimpan ke collection YAML.</div>
+            <div class="flow-step"><strong>Bandingkan</strong>Jalankan lagi setelah deploy, lalu <kbd>Ctrl</kbd>+<kbd>D</kbd> untuk membuka Diff Viewer.</div>
+          </div>
+
+          <h3>Contoh: request pertama</h3>
+          <ol>
+            <li>Tekan <kbd>Ctrl</kbd>+<kbd>N</kbd>. Pada layar <em>NEW REQUEST</em>, isi nama misalnya <code>List users</code>.</li>
+            <li>Pilih folder tujuan (atau buat collection baru dengan <kbd>Ctrl</kbd>+<kbd>T</kbd> lalu ganti tipe ke folder).</li>
+            <li>Pilih method dengan <kbd>←</kbd>/<kbd>→</kbd>, lalu <kbd>Enter</kbd>.</li>
+            <li>Ketik <code>https://api.example.com/users</code> di URL bar dan tekan <kbd>Enter</kbd>.</li>
+            <li>Response muncul di panel bawah. Gunakan <kbd>Tab</kbd> untuk masuk ke panel response, lalu <kbd>Tab</kbd> lagi untuk berpindah Body/Cookies/Headers.</li>
+            <li><kbd>Ctrl</kbd>+<kbd>S</kbd> untuk menyimpan. Folder yang belum ada akan dibuat otomatis.</li>
+          </ol>
+
+          <h3>Jika memakai auth atau cookie</h3>
+          <p>Request dengan header sensitif, cookie, auth, atau query sensitif akan diblokir sampai origin-nya masuk allowlist. Tambahkan lewat <kbd>Ctrl</kbd>+<kbd>G</kbd>; formatnya adalah string multi-baris berisi satu origin per baris:</p>
+          <pre><code>scope: |
+  https://api.example.com
+  http://localhost:8080</code></pre>
+          <p class="small">Lihat <a href="#scope">Global Scope</a> untuk aturan validasi lengkap.</p>
+        </section>
+
+        <!-- 05 -->
+        <section class="doc-section" id="antarmuka" data-title="Anatomi antarmuka" data-keywords="ui antarmuka layout navbar sidebar explorer request bar method url send tabs params headers body auth cookies response panel footer status bar mouse">
+          <span class="section-kicker">05 · DASAR</span>
+          <h2>Anatomi antarmuka<a class="anchor" href="#antarmuka" aria-label="Tautan bagian">#</a></h2>
+          <div class="diagram"><pre>┌ TermAPI ─────────────────────────────── ● staging │ https://api.example.com │ 21:40 ┐
+│ EXPLORER                       │  ‹ GET › │ https://api.example.com/users │ > Send   │
+│ ▾ collections                  │  Params(0)  Headers(2)  Body(1)  Auth  Cookies(0) │
+│   ▾ users                      │  ┌───────────────────────────────────────────────┐ │
+│     GET  List users            │  │ request editor                                │ │
+│     POST Create user           │  └───────────────────────────────────────────────┘ │
+│                                │  Response │ 200 OK · 142ms · 1.2 KB             │
+│                                │  Body(12)  Cookies(1)  Headers(8)                 │
+│                                │  Pretty · Raw · Preview             gjson .data    │
+│                                │  ┌───────────────────────────────────────────────┐ │
+│                                │  │ 1 │ {                                         │ │
+│                                │  │ 2 │   "data": [ ... ]                         │ │
+│                                │  └───────────────────────────────────────────────┘ │
+└ SIDEBAR │ j/k navigate │ enter open │ ^n new req │ ^d delete │ ... │ 200 142ms │ F1 help ┘</pre></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Area</th><th>Fungsi</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Navbar</strong></td><td>Brand, environment aktif, badge Global Scope, dan jam. Badge scope diringkas jika ada banyak origin.</td></tr>
+                <tr><td><strong>Sidebar</strong></td><td>Explorer collections, request, dan pintasan. Bisa fokus dengan <kbd>Tab</kbd> dari editor.</td></tr>
+                <tr><td><strong>Request bar</strong></td><td>Pill method (warna semantik), input URL, dan tombol Send. Klik panah untuk mengganti method.</td></tr>
+                <tr><td><strong>Request tabs</strong></td><td>Params, Headers, Body, Auth, Cookies. Badge angka menunjukkan jumlah baris/isi.</td></tr>
+                <tr><td><strong>Request editor</strong></td><td>Tabel KV atau textarea sesuai tab. Tab aktif ditandai pill aksen.</td></tr>
+                <tr><td><strong>Response panel</strong></td><td>Tab Body/Cookies/Headers, mode Pretty/Raw/Preview, status code, waktu, ukuran, gjson/find, dan viewport.</td></tr>
+                <tr><td><strong>Footer</strong></td><td>Mode badge kontekstual + shortcut yang relevan + status response + environment + <kbd>F1 help</kbd> + <kbd>Ctrl</kbd>+<kbd>Q</kbd>.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>Fokus dan mode</h3>
+          <ul>
+            <li><kbd>Tab</kbd> berpindah fokus antara Sidebar dan kolom kanan. Saat berada di dalam tabel KV, <kbd>Tab</kbd> berpindah sel, bukan panel.</li>
+            <li>Di textarea body, <kbd>Tab</kbd> memasukkan indentasi dua spasi.</li>
+            <li>Layar overlay (help, history, diff, batch, scope, environment, wire) memiliki shortcut sendiri dan menutup dengan <kbd>Esc</kbd>.</li>
+            <li>Mouse didukung: klik tab, pilih baris, edit sel, drag seleksi di response, dan scroll wheel.</li>
+          </ul>
+          <div class="callout">
+            <span class="label">Minimal ukuran</span>
+            Jika lebar &lt; 105 atau tinggi &lt; 32, TermAPI menampilkan layar peringatan. Perbesar terminal atau perkecil font terminal.
+          </div>
+        </section>
+
+        <!-- 06 -->
+        <section class="doc-section" id="koleksi" data-title="Collections dan format YAML" data-keywords="collections folder yaml request file struktur _folder.yaml id name method url params_list headers_list body_spec auth cookies legacy slug trash delete save atomic TERMAPI_COLLECTIONS_DIR">
+          <span class="section-kicker">06 · DASAR</span>
+          <h2>Collections &amp; YAML<a class="anchor" href="#koleksi" aria-label="Tautan bagian">#</a></h2>
+          <p>Setiap subfolder langsung di dalam <code>collections/</code> adalah sebuah collection. Subfolder di dalamnya menjadi grup request. File <code>_folder.yaml</code> menyimpan metadata folder; request disimpan sebagai file <code>.yaml</code> biasa.</p>
+          <div class="diagram"><pre>collections/
+├── users/
+│   ├── _folder.yaml
+│   ├── list-users.yaml
+│   ├── get-user.yaml
+│   └── admin/                 # subfolder = grup request
+│       ├── _folder.yaml
+│       └── disable-user.yaml
+└── auth/
+    ├── _folder.yaml
+    └── login.yaml
+
+.termapi/
+├── global.yaml                # scope + response_ratio
+├── envs/
+│   └── staging.yaml
+├── history.db                 # SQLite
+└── trash/                     # item terhapus (bisa dipulihkan manual)</pre></div>
+          <h3>Metadata folder</h3>
+          <pre><code>id: users
+name: Users
+type: collection      # collection | folder</code></pre>
+          <h3>Field request</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Field</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+              <tbody>
+                <tr><td><code>id</code></td><td>string</td><td>ID unik. Jika kosong, dibuat dari nama file (slug).</td></tr>
+                <tr><td><code>name</code></td><td>string</td><td>Nama tampilan. Jika kosong, memakai nama file.</td></tr>
+                <tr><td><code>method</code></td><td>string</td><td>Default <code>GET</code>.</td></tr>
+                <tr><td><code>url</code></td><td>string</td><td>URL request, boleh memakai <code>{{VARIABLE}}</code>.</td></tr>
+                <tr><td><code>params_list</code></td><td>[]KVRow</td><td>Query dan path parameter.</td></tr>
+                <tr><td><code>headers_list</code></td><td>[]KVRow</td><td>Header request.</td></tr>
+                <tr><td><code>body_spec</code></td><td>BodySpec</td><td>Body terstruktur (raw/fields/file).</td></tr>
+                <tr><td><code>auth</code></td><td>AuthSpec</td><td>Konfigurasi autentikasi.</td></tr>
+                <tr><td><code>cookies</code></td><td>[]KVRow</td><td>Cookie yang digabung ke header <code>Cookie</code>.</td></tr>
+                <tr><td><code>params</code></td><td>string</td><td><em>Legacy.</em> Dinormalisasi ke <code>params_list</code>.</td></tr>
+                <tr><td><code>headers</code></td><td>map</td><td><em>Legacy.</em> Dinormalisasi ke <code>headers_list</code>.</td></tr>
+                <tr><td><code>body</code></td><td>string</td><td><em>Legacy.</em> Dinormalisasi ke <code>body_spec</code>.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>KVRow</h3>
+          <pre><code>- key: Authorization
+  value: "Bearer {{token}}"
+  description: ""          # opsional
+  kind: text               # text | file (khusus multipart)
+  disabled: false          # true = baris dilewati</code></pre>
+          <h3>BodySpec</h3>
+          <pre><code>body_spec:
+  type: json               # none|json|xml|text|form|multipart|binary|graphql
+  raw: |
+    {
+      "name": "Ada"
+    }
+  content_type: ""         # opsional, override Content-Type
+  fields: []               # dipakai form/multipart
+  file: ""                 # dipakai binary</code></pre>
+          <h3>AuthSpec</h3>
+          <pre><code>auth:
+  type: bearer             # none|bearer|basic|api_key
+  token: "{{token}}"
+  # basic:
+  username: ""
+  password: ""
+  # api_key:
+  key: X-Api-Key
+  value: "{{api_key}}"
+  add_to: header           # header|query</code></pre>
+          <h3>Contoh lengkap</h3>
+          <pre><code>id: create-user
+name: Create user
+method: POST
+url: "{{BASE_URL}}/users"
+headers_list:
+  - key: Accept
+    value: application/json
+  - key: Content-Type
+    value: application/json
+params_list:
+  - key: notify
+    value: "true"
+body_spec:
+  type: json
+  raw: |
+    {
+      "name": "Ada Lovelace",
+      "email": "ada@example.com"
+    }
+auth:
+  type: bearer
+  token: "{{token}}"
+cookies:
+  - key: session
+    value: "{{session_id}}"</code></pre>
+          <h3>Perilaku penyimpanan</h3>
+          <ul>
+            <li>Nama file dibuat dari slug nama (huruf kecil, non-alfanumerik menjadi <code>-</code>). Duplikat mendapat suffix <code>-2</code>, <code>-3</code>, dan seterusnya.</li>
+            <li>Penulisan memakai file sementara lalu <code>rename</code>, sehingga file tidak setengah tertulis jika proses berhenti.</li>
+            <li>Hanya file <code>.yaml</code> yang dimuat. File/folder berawalan titik diabaikan.</li>
+            <li>Menghapus item memindahkannya ke <code>.termapi/trash/&lt;timestamp&gt;-&lt;nama&gt;</code>, bukan menghapus permanen.</li>
+            <li>Path tidak boleh keluar dari direktori collections (dicek dengan path relatif).</li>
+            <li>Collection root dapat diganti dengan environment variable <code>TERMAPI_COLLECTIONS_DIR</code>.</li>
+          </ul>
+          <div class="callout tip">
+            <span class="label">Versioning</span>
+            Karena collection berupa YAML, Anda bisa melakukan review perubahan request lewat Git, sama seperti kode. Jangan commit secret; gunakan environment variable dan file env yang tidak di-commit.
+          </div>
+        </section>
+
+        <!-- 07 -->
+        <section class="doc-section" id="variabel" data-title="Variabel dan template" data-keywords="variabel template interpolation {{KEY}} environment env global scope session variable token bearer captured variable chaining prioritas priority json path">
+          <span class="section-kicker">07 · DASAR</span>
+          <h2>Variabel &amp; template<a class="anchor" href="#variabel" aria-label="Tautan bagian">#</a></h2>
+          <p>Gunakan sintaks <code>{{NAMA_VARIABEL}}</code> di URL, params, headers, cookies, body, dan auth. Penggantian dilakukan tepat sebelum request dikirim.</p>
+          <pre><code>GET {{BASE_URL}}/users/{{user_id}}
+Authorization: Bearer {{token}}
+
+{
+  "email": "{{email}}"
+}</code></pre>
+          <h3>Sumber variabel dan prioritas</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Prioritas</th><th>Sumber</th><th>Umur</th><th>Lokasi</th></tr></thead>
+              <tbody>
+                <tr><td>1 (tertinggi)</td><td>Session variables</td><td>Selama proses berjalan</td><td>Memori; diisi dari response JSON</td></tr>
+                <tr><td>2</td><td>Environment aktif</td><td>Persisten</td><td><code>.termapi/envs/&lt;nama&gt;.yaml</code></td></tr>
+                <tr><td>3</td><td>Nilai literal</td><td>Persisten</td><td>File request YAML</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Session variables menimpa environment. Environment aktif hanya satu per waktu; pilih lewat <kbd>Ctrl</kbd>+<kbd>E</kbd>.</p>
+
+          <h3>Variabel yang ditangkap otomatis</h3>
+          <p>Setelah response sukses (status 2xx/3xx), TermAPI mem-flatten JSON scalar menjadi variabel dengan path titik dan indeks array:</p>
+          <pre><code>{
+  "token": "eyJ...",
+  "user": { "id": 7, "role": "admin" },
+  "items": [ { "sku": "A-1" } ]
+}</code></pre>
+          <p>Menghasilkan variabel:</p>
+          <pre><code>token       = eyJ...
+user.id     = 7
+user.role   = admin
+items[0].sku = A-1</code></pre>
+          <ul>
+            <li>Hanya nilai <code>string</code>, angka, dan boolean yang disimpan. <code>null</code>, object, dan array kosong dilewati.</li>
+            <li>Maksimal 1.000 variabel dan kedalaman 32 level per response.</li>
+            <li>Variabel ini masuk ke <em>session variables</em>, sehingga langsung bisa dipakai request berikutnya pada proses yang sama.</li>
+            <li>Pada batch chaining, variabel juga disimpan per-batch dan diterapkan ke request selanjutnya sebelum dikirim.</li>
+          </ul>
+
+          <h3>Perlakuan khusus <code>token</code></h3>
+          <p>Jika session variable bernama <code>token</code> tersedia (misalnya dari response login), TermAPI:</p>
+          <ul>
+            <li>Mengganti pola <code>Bearer token</code> / <code>bearer token</code> pada header dengan <code>Bearer &lt;nilai token&gt;</code>.</li>
+            <li>Jika auth diset <code>none</code> dan belum ada header <code>Authorization</code>, menambahkan <code>Authorization: Bearer &lt;token&gt;</code> secara otomatis.</li>
+          </ul>
+          <div class="callout warn">
+            <span class="label">Keamanan</span>
+            Environment dan collection disimpan sebagai teks biasa. Jangan menyimpan token produksi permanen di file yang di-commit. Manfaatkan session variables atau environment lokal yang di-ignore.
+          </div>
+        </section>
+
+        <!-- 08 -->
+        <section class="doc-section" id="request" data-title="Request editor" data-keywords="request editor method params path parameter headers body json xml form multipart binary graphql auth bearer basic api key cookies raw format validate f6 f7 f8 ctrl+b ctrl+r ctrl+t suggestions">
+          <span class="section-kicker">08 · DASAR</span>
+          <h2>Request editor<a class="anchor" href="#request" aria-label="Tautan bagian">#</a></h2>
+          <h3>Method &amp; URL</h3>
+          <p>Method yang didukung: <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>DELETE</code>, <code>PATCH</code>, <code>OPTIONS</code>, <code>HEAD</code>. Warna pill mengikuti semantik method.</p>
+          <ul>
+            <li>Jika URL tidak memiliki skema, <code>localhost</code>/<code>127.0.0.1</code>/<code>[::1]</code> memakai <code>http://</code>; host lain memakai <code>https://</code>.</li>
+            <li>Query string yang diketik di URL otomatis dipindahkan ke tabel Params saat fokus berpindah, agar tidak terkirim ganda.</li>
+            <li>Path parameter didukung dengan <code>{key}</code> atau segmen <code>:key</code>. Nilainya diambil dari baris Params dengan key yang sama.</li>
+            <li>Baris Params yang tidak terpakai sebagai path parameter akan ditambahkan sebagai query string.</li>
+          </ul>
+
+          <h3>Tabel key/value</h3>
+          <p>Berlaku untuk Params, Headers, Cookies, form body, dan multipart:</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Tombol</th><th>Aksi</th></tr></thead>
+              <tbody>
+                <tr><td><kbd>↑</kbd>/<kbd>↓</kbd> atau <kbd>j</kbd>/<kbd>k</kbd></td><td>Pindah baris</td></tr>
+                <tr><td><kbd>←</kbd>/<kbd>→</kbd> atau <kbd>h</kbd>/<kbd>l</kbd></td><td>Pindah kolom</td></tr>
+                <tr><td><kbd>Enter</kbd> / <kbd>e</kbd></td><td>Edit sel</td></tr>
+                <tr><td><kbd>a</kbd> / <kbd>d</kbd></td><td>Tambah / hapus baris</td></tr>
+                <tr><td><kbd>Space</kbd></td><td>Aktif/nonaktifkan baris</td></tr>
+                <tr><td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Pindah sel sambil tetap mengedit</td></tr>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>R</kbd></td><td>Mode raw (Params/Headers): edit sebagai teks</td></tr>
+                <tr><td><kbd>t</kbd></td><td>Ganti tipe baris: <code>text</code> ↔ <code>file</code> (multipart)</td></tr>
+                <tr><td><kbd>s</kbd></td><td>Saran nama header umum (Headers, saat key kosong)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Mode raw Params memakai format <code>key=value</code> per baris; Headers memakai <code>Nama: nilai</code>. Baris berawalan <code>#</code> dianggap nonaktif.</p>
+
+          <h3>Body type</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Tipe</th><th>Editor</th><th>Content-Type default</th></tr></thead>
+              <tbody>
+                <tr><td><code>none</code></td><td>Tidak ada body</td><td>—</td></tr>
+                <tr><td><code>json</code></td><td>Textarea JSON</td><td><code>application/json</code></td></tr>
+                <tr><td><code>xml</code></td><td>Textarea XML</td><td><code>application/xml</code></td></tr>
+                <tr><td><code>text</code></td><td>Textarea</td><td><code>text/plain; charset=utf-8</code></td></tr>
+                <tr><td><code>form</code></td><td>Tabel field</td><td><code>application/x-www-form-urlencoded</code></td></tr>
+                <tr><td><code>multipart</code></td><td>Tabel field (text/file)</td><td>Boundary multipart</td></tr>
+                <tr><td><code>binary</code></td><td>Path file</td><td>Dideteksi dari isi file</td></tr>
+                <tr><td><code>graphql</code></td><td>Textarea JSON</td><td><code>application/json</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <ul>
+            <li><kbd>Ctrl</kbd>+<kbd>B</kbd> mengganti tipe body berurutan.</li>
+            <li><kbd>F6</kbd> prettify JSON, <kbd>F7</kbd> minify JSON, <kbd>F8</kbd> validasi JSON/XML.</li>
+            <li>Untuk <code>multipart</code>, tekan <kbd>t</kbd> pada baris untuk mengubah tipe menjadi file, lalu isi path file pada kolom value.</li>
+            <li>Body tidak dikirim untuk <code>GET</code> dan <code>HEAD</code>, sesuai perilaku HTTP client.</li>
+            <li><code>Content-Type</code> hanya diisi otomatis jika header tersebut belum ada.</li>
+          </ul>
+
+          <h3>Auth</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Tipe</th><th>Perilaku</th></tr></thead>
+              <tbody>
+                <tr><td><code>none</code></td><td>Tidak menambahkan kredensial (kecuali auto-token session seperti dijelaskan di bagian variabel).</td></tr>
+                <tr><td><code>bearer</code></td><td><code>Authorization: Bearer &lt;token&gt;</code>, hanya jika belum ada header Authorization.</td></tr>
+                <tr><td><code>basic</code></td><td><code>Authorization: Basic base64(username:password)</code>, hanya jika belum ada Authorization.</td></tr>
+                <tr><td><code>api_key</code></td><td>Header <code>Key: Value</code> atau query parameter, sesuai <em>Add To</em>.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Cookies</h3>
+          <p>Baris cookies digabung menjadi header <code>Cookie</code> dan digabungkan dengan header Cookie manual bila ada. TermAPI juga memakai cookie jar sesi, sehingga <code>Set-Cookie</code> dari response otomatis tersedia untuk request berikutnya selama proses berjalan.</p>
+        </section>
+
+        <!-- 09 -->
+        <section class="doc-section" id="response" data-title="Response viewer" data-keywords="response viewer pretty raw preview gjson filter find search copy selection headers cookies status timing size redirect tls retry timeout truncate 2 mib error">
+          <span class="section-kicker">09 · DASAR</span>
+          <h2>Response viewer<a class="anchor" href="#response" aria-label="Tautan bagian">#</a></h2>
+          <p>Panel response menampilkan status, waktu, ukuran, dan isi response. Semua konten berada dalam satu frame agar sejajar dengan editor request.</p>
+          <h3>Tab</h3>
+          <ul>
+            <li><strong>Body</strong> — body response.</li>
+            <li><strong>Cookies</strong> — cookie dari response.</li>
+            <li><strong>Headers</strong> — header response yang sudah diurutkan.</li>
+          </ul>
+          <h3>Mode tampilan</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Mode</th><th>Isi</th></tr></thead>
+              <tbody>
+                <tr><td><code>Pretty</code></td><td>JSON diindentasi 2 spasi. Filter gjson diterapkan pada mode ini.</td></tr>
+                <tr><td><code>Raw</code></td><td>Body asli tanpa prettify. Error ditampilkan dalam bentuk teknis.</td></tr>
+                <tr><td><code>Preview</code></td><td>Ringkasan metadata: method, URL, status, Content-Type, ukuran, waktu, timing DNS/connect/TLS/first byte/total, redirect, dan info TLS.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Filter gjson</h3>
+          <p>Klik field <code>gjson</code> di toolbar atau tekan <kbd>/</kbd> saat fokus tidak berada di input/editor. Contoh ekspresi:</p>
+          <pre><code>.data
+.data.items.0.name
+.data.items.#(status=="active").id</code></pre>
+          <p>Filter hanya berlaku jika body valid JSON dan ekspresi menghasilkan nilai. Object/array ditampilkan sebagai JSON; scalar ditampilkan sebagai string. Jika tidak ada hasil, body asli yang ditampilkan.</p>
+
+          <h3>Pencarian teks dan seleksi</h3>
+          <ul>
+            <li><kbd>Ctrl</kbd>+<kbd>F</kbd> membuka pencarian teks pada tab/mode aktif.</li>
+            <li><kbd>n</kbd> / <kbd>N</kbd> ke match berikutnya/sebelumnya; match aktif disorot lebih terang.</li>
+            <li>Klik lalu drag untuk memilih baris; <kbd>y</kbd> atau <kbd>Enter</kbd> menyalin seleksi. Jika tidak ada seleksi, seluruh tab disalin.</li>
+            <li><kbd>Ctrl</kbd>+<kbd>Y</kbd> menyalin seluruh tab dari mana saja.</li>
+            <li><kbd>Esc</kbd> membersihkan seleksi/fokus response; jika request masih berjalan, <kbd>Esc</kbd> membatalkannya.</li>
+          </ul>
+
+          <h3>Batas dan perilaku jaringan</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Aspek</th><th>Nilai</th></tr></thead>
+              <tbody>
+                <tr><td>Timeout request</td><td>30 detik (konteks request).</td></tr>
+                <tr><td>Ukuran response</td><td>Maksimal 2 MiB dibaca; kelebihan dipotong dan ditandai <code>[response truncated at 2 MiB]</code>.</td></tr>
+                <tr><td>Redirect</td><td>Maksimal 10 redirect. Origin redirect harus tetap ada di Scope jika request memakai kredensial.</td></tr>
+                <tr><td>Retry manual</td><td>Hingga 2 retry (total 3 attempt) untuk method idempoten: GET, HEAD, OPTIONS, PUT, DELETE. Dipicu error transport sementara, status 408, 429, atau 5xx. Backoff 500 ms, 1 s, 2 s, dst.</td></tr>
+                <tr><td>Retry non-idempoten</td><td>Tidak dilakukan otomatis untuk POST/PATCH.</td></tr>
+                <tr><td>Response time</td><td>Durasi total request dalam milidetik.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout">
+            <span class="label">Error yang ramah</span>
+            Error umum (DNS, connection refused, TLS, timeout, scope blocked, redirect blocked, header tidak valid) ditampilkan dengan penjelasan dan saran. Beralih ke mode <strong>Raw</strong> untuk melihat pesan error asli.
+          </div>
+        </section>
+
+        <!-- 10 -->
+        <section class="doc-section" id="keamanan" data-title="Keamanan dan Scope" data-keywords="keamanan security scope allowlist kredensial credential blocked origin redirect sensitive header cookie query auth plaintext secrets tls">
+          <span class="section-kicker">10 · DASAR</span>
+          <h2>Keamanan &amp; Scope<a class="anchor" href="#keamanan" aria-label="Tautan bagian">#</a></h2>
+          <p>TermAPI memakai model <strong>allowlist origin</strong>. Request yang membawa kredensial hanya boleh dikirim ke origin yang secara eksplisit diizinkan.</p>
+          <h3>Kapan Scope diperlukan?</h3>
+          <p>Scope dicek jika salah satu kondisi berikut terpenuhi:</p>
+          <ul>
+            <li>Ada header sensitif: nama mengandung <code>auth</code>, <code>cookie</code>, <code>token</code>, <code>secret</code>, <code>password</code>, <code>credential</code>, <code>session</code>, <code>apikey</code>, atau berakhiran <code>key</code>.</li>
+            <li>Ada query parameter sensitif dengan pola nama serupa.</li>
+            <li>Ada cookie yang aktif.</li>
+            <li>Auth bukan <code>none</code>.</li>
+          </ul>
+          <p>Jika diperlukan tetapi origin tidak ada di allowlist, request dihentikan dengan pesan <code>credentials blocked: add the exact request origin to .termapi/global.yaml</code>.</p>
+          <h3>Format origin</h3>
+          <p>Satu origin per baris: <code>scheme://host[:port]</code>. Path harus kosong atau <code>/</code>. Tidak boleh ada userinfo, query, atau fragment.</p>
+          <pre><code>https://api.example.com
+https://api.example.com:8443
+http://localhost:8080
+http://127.0.0.1:3000</code></pre>
+          <ul>
+            <li>Hanya <code>http</code> dan <code>https</code>.</li>
+            <li>Port default dinormalisasi: <code>https://host:443</code> sama dengan <code>https://host</code>.</li>
+            <li>Host case-insensitive.</li>
+            <li>Wildcard (<code>*.example.com</code>) tidak didukung; daftarkan origin persis.</li>
+            <li>Redirect ke origin di luar allowlist akan diblokir jika request memakai kredensial.</li>
+          </ul>
+          <h3>Penilaian risiko di layar Scope</h3>
+          <p>Layar Global Scope mengklasifikasikan origin: <code>LOCAL</code> (localhost/loopback), <code>LAN</code> (private/link-local/<code>.local</code>/<code>.internal</code>), atau <code>PUBLIC</code>. Risiko <code>LOW</code> untuk HTTPS, <code>MEDIUM</code> untuk HTTP lokal/LAN, <code>HIGH</code> untuk HTTP publik.</p>
+          <div class="callout danger">
+            <span class="label">Secret tidak dienkripsi</span>
+            Environment YAML, request YAML, dan history SQLite disimpan sebagai teks biasa. Lindungi direktori proyek dan jangan commit file yang memuat token/kredensial.
+          </div>
+        </section>
+
+        <!-- 11 -->
+        <section class="doc-section" id="history" data-title="History dan SQLite" data-keywords="history riwayat sqlite database run response body search delete captured variables schema .termapi history.db ctrl+o">
+          <span class="section-kicker">11 · FITUR</span>
+          <h2>History<a class="anchor" href="#history" aria-label="Tautan bagian">#</a></h2>
+          <p>Setiap request yang selesai (termasuk yang gagal) disimpan ke <code>.termapi/history.db</code>. History menjadi sumber data untuk Diff Viewer dan untuk menelusuri kembali response lama.</p>
+          <ul>
+            <li><kbd>Ctrl</kbd>+<kbd>O</kbd> membuka layar History.</li>
+            <li><kbd>↑</kbd>/<kbd>↓</kbd> atau <kbd>j</kbd>/<kbd>k</kbd> memilih run; <kbd>PgUp</kbd>/<kbd>PgDn</kbd> per halaman.</li>
+            <li><kbd>Ctrl</kbd>+<kbd>F</kbd> mencari berdasarkan request, URL, method, status, atau collection.</li>
+            <li><kbd>Ctrl</kbd>+<kbd>D</kbd> menghapus run terpilih (hanya di layar History).</li>
+            <li><kbd>Tab</kbd> berpindah tab response (Body/Cookies/Headers) pada panel bawah.</li>
+            <li><kbd>Esc</kbd> kembali ke editor.</li>
+          </ul>
+          <h3>Skema database</h3>
+          <pre><code>collections (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  folder_path TEXT NOT NULL UNIQUE,
+  base_url TEXT NOT NULL DEFAULT ''
+)
+
+history_runs (
+  id INTEGER PRIMARY KEY,
+  collection_id INTEGER REFERENCES collections(id) ON DELETE SET NULL,
+  request_name TEXT NOT NULL,
+  target_domain TEXT NOT NULL,
+  url TEXT NOT NULL,
+  method TEXT NOT NULL,
+  status_code INTEGER NOT NULL,
+  response_time INTEGER NOT NULL,     -- milidetik
+  response_body TEXT NOT NULL,
+  executed_at DATETIME NOT NULL
+)
+
+captured_variables (
+  id INTEGER PRIMARY KEY,
+  run_id INTEGER NOT NULL REFERENCES history_runs(id) ON DELETE CASCADE,
+  domain_scope TEXT NOT NULL,
+  var_name TEXT NOT NULL,
+  var_value TEXT NOT NULL
+)</code></pre>
+          <p>Index <code>idx_history_runs_executed_at</code> mempercepat pengurutan berdasarkan waktu. Skema dibuat otomatis dengan <code>CREATE TABLE IF NOT EXISTS</code>; tidak ada migrasi versi.</p>
+          <div class="callout warn">
+            <span class="label">Retensi</span>
+            History tidak dipangkas otomatis. Layar History memuat maksimal 500 run terbaru, tetapi database dapat terus bertambah. Hapus run lama secara manual jika diperlukan.
+          </div>
+        </section>
+
+        <!-- 12 -->
+        <section class="doc-section" id="diff" data-title="Diff Viewer A vs B" data-keywords="diff viewer bandingkan compare baseline A B response body history per request method url picker b hunks side by side unified expand collapse">
+          <span class="section-kicker">12 · FITUR</span>
+          <h2>Diff Viewer (A vs B)<a class="anchor" href="#diff" aria-label="Tautan bagian">#</a></h2>
+          <p>Diff Viewer membandingkan <strong>body response</strong> dari dua eksekusi request yang sama. Ini berguna untuk melihat perubahan API setelah deploy atau memastikan perubahan request tidak menimbulkan regresi.</p>
+          <div class="two-col">
+            <div class="card"><h4>A · baseline</h4><p>Response dari run <em>sebelumnya</em>. Ditampilkan di kiri dan ditandai <code>-</code>.</p></div>
+            <div class="card"><h4>B · terbaru</h4><p>Response dari run <em>paling baru</em>. Ditampilkan di kanan dan ditandai <code>+</code>.</p></div>
+          </div>
+          <h3>Cara membuka</h3>
+          <ul>
+            <li>Tekan <kbd>Ctrl</kbd>+<kbd>D</kbd> saat sidebar <strong>tidak</strong> fokus dan Anda tidak berada di layar History.</li>
+            <li>Di sidebar, <kbd>Ctrl</kbd>+<kbd>D</kbd> berarti menghapus request; di History berarti menghapus run.</li>
+          </ul>
+          <h3>Sumber baseline</h3>
+          <ol>
+            <li>TermAPI mencari history dengan <strong>method + URL yang sama</strong> dengan request aktif. URL di-resolve dengan environment/session variables agar cocok dengan URL yang benar-benar dikirim.</li>
+            <li>Jika ditemukan, dua run terbaru dipakai: run terbaru sebagai B, run sebelumnya sebagai A.</li>
+            <li>Jika tidak ada, dipakai dua run terakhir global, dengan catatan sumber di layar diff.</li>
+            <li>Jika history belum ada, sisi B memakai response aktif dan sisi A memakai placeholder.</li>
+          </ol>
+          <h3>Memilih baseline manual</h3>
+          <ul>
+            <li>Tekan <kbd>b</kbd> untuk membuka daftar hingga 50 run terakhir untuk request tersebut.</li>
+            <li><kbd>↑</kbd>/<kbd>↓</kbd> memilih, <kbd>Enter</kbd> menerapkan sebagai A. <kbd>b</kbd>/<kbd>Esc</kbd> membatalkan.</li>
+            <li>Tanda <code>✓</code> menunjukkan baseline yang sedang dipakai; <code>▸</code> menunjukkan kursor pemilihan.</li>
+            <li>B tetap response terbaru dari run yang dipakai saat viewer dibuka.</li>
+          </ul>
+          <h3>Shortcut di Diff Viewer</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Tombol</th><th>Aksi</th></tr></thead>
+              <tbody>
+                <tr><td><kbd>j</kbd>/<kbd>k</kbd>, <kbd>↑</kbd>/<kbd>↓</kbd></td><td>Scroll satu baris</td></tr>
+                <tr><td><kbd>PgDn</kbd>/<kbd>Ctrl</kbd>+<kbd>D</kbd></td><td>Scroll satu halaman</td></tr>
+                <tr><td><kbd>PgUp</kbd>/<kbd>Ctrl</kbd>+<kbd>U</kbd></td><td>Scroll satu halaman ke atas</td></tr>
+                <tr><td><kbd>g</kbd>/<kbd>Home</kbd>, <kbd>G</kbd>/<kbd>End</kbd></td><td>Ke atas / bawah</td></tr>
+                <tr><td><kbd>n</kbd>/<kbd>Tab</kbd>, <kbd>p</kbd>/<kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Hunk berikutnya / sebelumnya (auto-scroll)</td></tr>
+                <tr><td><kbd>e</kbd></td><td>Buka/tutup semua blok yang tidak berubah</td></tr>
+                <tr><td><kbd>m</kbd></td><td>Ganti Side-by-Side ↔ Unified</td></tr>
+                <tr><td><kbd>b</kbd></td><td>Pilih baseline dari history</td></tr>
+                <tr><td><kbd>?</kbd>/<kbd>F1</kbd></td><td>Panduan pemakaian di layar diff</td></tr>
+                <tr><td><kbd>Esc</kbd>/<kbd>q</kbd></td><td>Tutup panduan/pemilih; tekan lagi untuk menutup viewer</td></tr>
+                <tr><td>Scroll wheel</td><td>Scroll (atau navigasi daftar saat pemilih terbuka)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>Bagaimana diff dihitung</h3>
+          <ul>
+            <li>Jika kedua sisi valid JSON, keduanya di-<code>unmarshal</code> lalu di-<code>marshal</code> ulang dengan indentasi dan urutan key yang dinormalisasi. Artinya perbedaan spasi/urutan key tidak dianggap perubahan.</li>
+            <li>Jika bukan JSON, teks dibandingkan apa adanya.</li>
+            <li>Blok yang identik dan panjang (&gt; 10 baris equal) otomatis diciutkan. Tekan <kbd>e</kbd> untuk membuka.</li>
+          </ul>
+          <div class="callout warn">
+            <span class="label">Batasan penting</span>
+            Diff hanya membandingkan <strong>body response</strong>. Status code, header, cookie, dan waktu run tidak di-diff — meskipun method/status/waktu ditampilkan pada label A/B. Hanya dua run yang dibandingkan pada satu waktu.
+          </div>
+        </section>
+
+        <!-- 13 -->
+        <section class="doc-section" id="batch" data-title="Batch runner dan chaining" data-keywords="batch runner collection runner ctrl+l folder depth chain chaining retry parallel request hasil hasil batch variable capture sequential">
+          <span class="section-kicker">13 · FITUR</span>
+          <h2>Batch runner &amp; chaining<a class="anchor" href="#batch" aria-label="Tautan bagian">#</a></h2>
+          <p>Batch runner menjalankan semua request pada folder collection (dan subfolder sesuai kedalaman) lalu menampilkan hasilnya dalam tabel.</p>
+          <h3>Menjalankan batch</h3>
+          <ol>
+            <li>Fokuskan sidebar (<kbd>Tab</kbd>) dan pilih folder collection.</li>
+            <li>Tekan <kbd>Ctrl</kbd>+<kbd>L</kbd>.</li>
+            <li>Atur konfigurasi:
+              <ul>
+                <li><kbd>←</kbd>/<kbd>→</kbd> — kedalaman subfolder (0 = folder ini saja; default = seluruh subtree).</li>
+                <li><kbd>c</kbd> — toggle mode <strong>Paralel</strong> ↔ <strong>Chaining</strong>.</li>
+                <li><kbd>r</kbd> — jumlah auto retry 0–3.</li>
+                <li><kbd>Enter</kbd> — jalankan; <kbd>Esc</kbd> — batal.</li>
+              </ul>
+            </li>
+          </ol>
+          <h3>Mode paralel</h3>
+          <ul>
+            <li>Semua request dikirim bersamaan sebagai sekumpulan command Bubble Tea.</li>
+            <li>Request diurutkan berdasarkan path relatif sebelum dijalankan.</li>
+            <li>Setiap hasil disimpan ke history saat selesai.</li>
+            <li>Tidak ada jaminan urutan eksekusi; cocok untuk request independen.</li>
+          </ul>
+          <h3>Mode chaining</h3>
+          <ul>
+            <li>Request dijalankan berurutan sesuai urutan path.</li>
+            <li>Setelah response sukses (2xx/3xx), JSON scalar diekstrak menjadi variabel.</li>
+            <li>Variabel diterapkan ke <code>{{KEY}}</code> pada URL, params, headers, cookies, body, file, dan auth request berikutnya.</li>
+            <li>Variabel juga masuk ke session variables.</li>
+            <li>Jika masih ada template yang belum ter-resolve, request tersebut gagal dengan error <code>unresolved chained variable {{...}}</code>.</li>
+          </ul>
+          <h3>Layar hasil</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Tombol</th><th>Aksi</th></tr></thead>
+              <tbody>
+                <tr><td><kbd>↑</kbd>/<kbd>↓</kbd> atau <kbd>j</kbd>/<kbd>k</kbd></td><td>Pilih request</td></tr>
+                <tr><td><kbd>Tab</kbd>/<kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Ganti tab response</td></tr>
+                <tr><td><kbd>Esc</kbd></td><td>Kembali ke editor</td></tr>
+                <tr><td>Klik</td><td>Berinteraksi dengan panel response</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Kolom tabel: status, nama request, waktu, dan jumlah attempt. Warna status mengikuti 2xx/4xx/5xx dan error.</p>
+          <div class="callout">
+            <span class="label">Retry batch</span>
+            Retry batch berlaku untuk semua method (berbeda dari retry manual yang hanya untuk method idempoten) dan dipicu oleh error transport sementara, status 408, 429, atau 5xx.
+          </div>
+        </section>
+
+        <!-- 14 -->
+        <section class="doc-section" id="wire" data-title="Wire inspector WebSocket dan gRPC" data-keywords="wire inspector websocket ws grpc monitor ctrl+w event tx rx filter inspector export session composer rtt throughput reflection insecure">
+          <span class="section-kicker">14 · FITUR</span>
+          <h2>Wire inspector (WebSocket &amp; gRPC)<a class="anchor" href="#wire" aria-label="Tautan bagian">#</a></h2>
+          <p><kbd>Ctrl</kbd>+<kbd>W</kbd> membuka Wire Inspector. URL awal diambil dari URL request aktif.</p>
+          <ul>
+            <li>Protocol <strong>WebSocket</strong> dipakai untuk URL <code>ws://</code>, <code>wss://</code>, atau default.</li>
+            <li>Protocol <strong>gRPC</strong> dipilih jika URL berawalan <code>grpc://</code> atau mengandung <code>:50051</code>.</li>
+            <li>Koneksi WebSocket memakai header kosong dan ping loop otomatis. gRPC memakai kredensial <em>insecure</em>.</li>
+          </ul>
+          <h3>Layout</h3>
+          <ul>
+            <li><strong>Header</strong> — throughput (TP), RTT, dan status koneksi.</li>
+            <li><strong>Event stream</strong> — TX, RX, CTRL, ERR dengan waktu relatif/absolut, ukuran, status, dan payload ringkas.</li>
+            <li><strong>Inspector</strong> — detail event terpilih (buka/tutup dengan <kbd>i</kbd>).</li>
+            <li><strong>Composer</strong> — kirim pesan dengan <kbd>Ctrl</kbd>+<kbd>Enter</kbd>.</li>
+            <li><strong>Status bar</strong> — petunjuk dan status export.</li>
+          </ul>
+          <h3>Shortcut</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Tombol</th><th>Aksi</th></tr></thead>
+              <tbody>
+                <tr><td><kbd>Tab</kbd>/<kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Siklus fokus Log → Composer → Inspector</td></tr>
+                <tr><td><kbd>j</kbd>/<kbd>k</kbd>, <kbd>↑</kbd>/<kbd>↓</kbd></td><td>Scroll event (mematikan auto-follow)</td></tr>
+                <tr><td><kbd>G</kbd></td><td>Kembali ke event terbaru + auto-follow</td></tr>
+                <tr><td><kbd>i</kbd></td><td>Buka/tutup inspector</td></tr>
+                <tr><td><kbd>t</kbd></td><td>Waktu absolut ↔ relatif</td></tr>
+                <tr><td><kbd>/</kbd></td><td>Filter payload (ketik langsung, <kbd>Backspace</kbd> hapus, <kbd>Enter</kbd> terapkan)</td></tr>
+                <tr><td><kbd>[</kbd>/<kbd>]</kbd></td><td>Scrub event sebelumnya/berikutnya</td></tr>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>S</kbd></td><td>Export sesi ke JSONL</td></tr>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>Enter</kbd></td><td>Kirim isi composer</td></tr>
+                <tr><td><kbd>Esc</kbd></td><td>Keluar dari composer/editor, lalu tutup layar</td></tr>
+                <tr><td><kbd>q</kbd>/<kbd>Ctrl</kbd>+<kbd>C</kbd></td><td>Putus koneksi dan keluar aplikasi</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>Export sesi</h3>
+          <p>File ditulis ke <code>~/.termapi/sessions/session-YYYYMMDD-HHMMSS.jsonl</code>. Setiap baris berisi event sesi.</p>
+          <div class="callout warn">
+            <span class="label">Batasan gRPC</span>
+            Composer gRPC memanggil method unary tetap <code>/grpc.reflection.v1alpha.ServerReflection/ServerReflectionInfo</code> dengan payload JSON. Belum ada pemilihan method/proto dinamis, metadata editor, streaming, atau TLS. Untuk eksplorasi gRPC penuh, gunakan tool khusus gRPC.
+          </div>
+        </section>
+
+        <!-- 15 -->
+        <section class="doc-section" id="scope" data-title="Global Scope" data-keywords="global scope allowlist origin ctrl+g add delete risk local lan public credential security redirect global.yaml">
+          <span class="section-kicker">15 · FITUR</span>
+          <h2>Global Scope<a class="anchor" href="#scope" aria-label="Tautan bagian">#</a></h2>
+          <p>Global Scope adalah daftar origin yang diizinkan menerima kredensial. Dibuka dengan <kbd>Ctrl</kbd>+<kbd>G</kbd>.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Tombol</th><th>Aksi</th></tr></thead>
+              <tbody>
+                <tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>Pilih origin</td></tr>
+                <tr><td><kbd>a</kbd> / <kbd>n</kbd></td><td>Tambah origin</td></tr>
+                <tr><td><kbd>Enter</kbd></td><td>Simpan origin baru (saat menambah)</td></tr>
+                <tr><td><kbd>d</kbd> / <kbd>x</kbd> / <kbd>Backspace</kbd></td><td>Hapus origin terpilih</td></tr>
+                <tr><td><kbd>Esc</kbd></td><td>Batal menambah / tutup layar</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Layar menampilkan detail origin (skema, host, port, path), tipe host, penilaian risiko, dan statistik HTTPS/HTTP/invalid. Perubahan langsung disimpan ke <code>.termapi/global.yaml</code>.</p>
+          <pre><code>scope: |
+  https://api.example.com
+  http://localhost:8080
+response_ratio: 0.72</code></pre>
+          <p>Lihat <a href="#keamanan">Keamanan &amp; Scope</a> untuk aturan validasi dan pemicu pemblokiran.</p>
+        </section>
+
+        <!-- 16 -->
+        <section class="doc-section" id="environment" data-title="Environments" data-keywords="environment env variables ctrl+e active env yaml plaintext add edit delete variable session priority">
+          <span class="section-kicker">16 · FITUR</span>
+          <h2>Environments<a class="anchor" href="#environment" aria-label="Tautan bagian">#</a></h2>
+          <p>Environment adalah kumpulan variabel bernama yang disimpan di <code>.termapi/envs/&lt;nama&gt;.yaml</code>. Buka dengan <kbd>Ctrl</kbd>+<kbd>E</kbd>.</p>
+          <pre><code>name: staging
+variables:
+  BASE_URL: https://staging.example.com
+  API_KEY: local-only-key</code></pre>
+          <h3>Shortcut</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Tombol</th><th>Aksi</th></tr></thead>
+              <tbody>
+                <tr><td><kbd>Tab</kbd></td><td>Pindah panel environment ↔ variabel</td></tr>
+                <tr><td><kbd>↑</kbd>/<kbd>↓</kbd></td><td>Pilih item</td></tr>
+                <tr><td><kbd>Enter</kbd></td><td>Aktifkan environment (panel kiri) / edit variabel (panel kanan)</td></tr>
+                <tr><td><kbd>a</kbd></td><td>Tambah environment atau variabel</td></tr>
+                <tr><td><kbd>e</kbd></td><td>Edit variabel</td></tr>
+                <tr><td><kbd>d</kbd></td><td>Hapus environment/variabel (environment aktif tidak bisa dihapus)</td></tr>
+                <tr><td><kbd>Esc</kbd>/<kbd>Ctrl</kbd>+<kbd>E</kbd></td><td>Tutup</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <ul>
+            <li>Saat aplikasi mulai, environment pertama (urut alfabet) otomatis diaktifkan jika ada.</li>
+            <li>Hanya satu environment aktif pada satu waktu.</li>
+            <li>Variabel environment digabung dengan session variables; session menang jika key sama.</li>
+            <li>File disimpan plaintext. Jangan commit kredensial.</li>
+          </ul>
+        </section>
+
+        <!-- 17 -->
+        <section class="doc-section" id="shortcuts" data-title="Referensi shortcut" data-keywords="shortcut keyboard hotkey keybinding ctrl tab enter esc f1 f6 f7 f8 global sidebar request response history diff batch env scope wire new save search">
+          <span class="section-kicker">17 · REFERENSI</span>
+          <h2>Semua shortcut<a class="anchor" href="#shortcuts" aria-label="Tautan bagian">#</a></h2>
+
+          <h3>Global</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Shortcut</th><th>Aksi</th></tr></thead>
+              <tbody>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>Q</kbd></td><td>Keluar dari TermAPI</td></tr>
+                <tr><td><kbd>F1</kbd> / <kbd>Alt</kbd>+<kbd>?</kbd></td><td>Buka layar Help</td></tr>
+                <tr><td><kbd>Tab</kbd></td><td>Pindah fokus Sidebar ↔ kolom kanan</td></tr>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>N</kbd></td><td>Buat request/folder baru</td></tr>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>S</kbd></td><td>Simpan request aktif</td></tr>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>F</kbd></td><td>Pencarian file collection</td></tr>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>O</kbd></td><td>Buka History</td></tr>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>D</kbd></td><td>Hapus request (sidebar fokus) / buka Diff Viewer</td></tr>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>G</kbd></td><td>Global Scope</td></tr>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>E</kbd></td><td>Environment manager</td></tr>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>W</kbd></td><td>Wire Inspector</td></tr>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>L</kbd></td><td>Batch runner (saat sidebar fokus)</td></tr>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>Y</kbd></td><td>Salin seluruh tab response</td></tr>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>↑</kbd>/<kbd>↓</kbd></td><td>Ubah split request/response (disimpan)</td></tr>
+                <tr><td><kbd>PgUp</kbd>/<kbd>Ctrl</kbd>+<kbd>U</kbd>, <kbd>PgDn</kbd></td><td>Scroll response</td></tr>
+                <tr><td><kbd>/</kbd></td><td>Fokus filter gjson response (jika tidak sedang mengetik)</td></tr>
+                <tr><td><kbd>Esc</kbd></td><td>Batalkan request berjalan / lepas fokus response</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Sidebar</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Shortcut</th><th>Aksi</th></tr></thead>
+              <tbody>
+                <tr><td><kbd>j</kbd>/<kbd>k</kbd>, <kbd>↑</kbd>/<kbd>↓</kbd></td><td>Navigasi</td></tr>
+                <tr><td><kbd>Enter</kbd>/<kbd>Space</kbd></td><td>Buka request / toggle folder</td></tr>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>N</kbd></td><td>New item (request/folder)</td></tr>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>A</kbd></td><td>Folder baru (dengan pilihan root/current)</td></tr>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>D</kbd></td><td>Hapus file request terpilih</td></tr>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>Backspace</kbd>/<kbd>Ctrl</kbd>+<kbd>Delete</kbd></td><td>Hapus item terpilih</td></tr>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>L</kbd></td><td>Batch runner</td></tr>
+                <tr><td><kbd>h</kbd>/<kbd>l</kbd>, <kbd>←</kbd>/<kbd>→</kbd></td><td>Scroll horizontal</td></tr>
+                <tr><td><kbd>H</kbd>/<kbd>L</kbd></td><td>Scroll horizontal cepat</td></tr>
+                <tr><td>Scroll wheel (+<kbd>Shift</kbd>)</td><td>Scroll vertikal/horizontal</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Request bar &amp; editor</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Shortcut</th><th>Aksi</th></tr></thead>
+              <tbody>
+                <tr><td><kbd>Enter</kbd></td><td>Kirim request (dari URL bar)</td></tr>
+                <tr><td><kbd>←</kbd>/<kbd>→</kbd>, <kbd>Space</kbd></td><td>Ganti method (saat fokus method)</td></tr>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>T</kbd></td><td>Siklus tab Params → Headers → Body → Auth → Cookies</td></tr>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>R</kbd></td><td>Toggle raw mode Params/Headers</td></tr>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>B</kbd></td><td>Ganti tipe body</td></tr>
+                <tr><td><kbd>F6</kbd> / <kbd>F7</kbd></td><td>Prettify / minify JSON</td></tr>
+                <tr><td><kbd>F8</kbd></td><td>Validasi JSON/XML body</td></tr>
+                <tr><td><kbd>a</kbd>/<kbd>d</kbd>, <kbd>Space</kbd></td><td>Tambah/hapus baris, aktif/nonaktifkan baris</td></tr>
+                <tr><td><kbd>t</kbd></td><td>Ubah tipe baris multipart / auth type</td></tr>
+                <tr><td><kbd>s</kbd></td><td>Saran nama header</td></tr>
+                <tr><td><kbd>Tab</kbd>/<kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Pindah sel; di textarea menyisipkan indentasi</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Response</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Shortcut</th><th>Aksi</th></tr></thead>
+              <tbody>
+                <tr><td><kbd>Tab</kbd>/<kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Body → Cookies → Headers</td></tr>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>F</kbd></td><td>Cari teks di response</td></tr>
+                <tr><td><kbd>n</kbd>/<kbd>N</kbd></td><td>Match berikutnya/sebelumnya</td></tr>
+                <tr><td><kbd>y</kbd>/<kbd>Enter</kbd></td><td>Salin seleksi atau seluruh tab</td></tr>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>Y</kbd></td><td>Salin seluruh tab</td></tr>
+                <tr><td><kbd>j</kbd>/<kbd>k</kbd>, <kbd>↑</kbd>/<kbd>↓</kbd></td><td>Scroll</td></tr>
+                <tr><td><kbd>/</kbd></td><td>Fokus filter gjson</td></tr>
+                <tr><td><kbd>Esc</kbd></td><td>Tutup find/seleksi/fokus response</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>History</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Shortcut</th><th>Aksi</th></tr></thead>
+              <tbody>
+                <tr><td><kbd>↑</kbd>/<kbd>↓</kbd>, <kbd>j</kbd>/<kbd>k</kbd></td><td>Pilih run</td></tr>
+                <tr><td><kbd>PgUp</kbd>/<kbd>PgDn</kbd></td><td>Per halaman</td></tr>
+                <tr><td><kbd>Home</kbd>/<kbd>End</kbd></td><td>Awal/akhir daftar</td></tr>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>F</kbd></td><td>Cari history</td></tr>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>D</kbd></td><td>Hapus run terpilih</td></tr>
+                <tr><td><kbd>Tab</kbd></td><td>Ganti tab response</td></tr>
+                <tr><td><kbd>Esc</kbd></td><td>Kembali</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Diff, batch, new item, save</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Konteks</th><th>Shortcut</th><th>Aksi</th></tr></thead>
+              <tbody>
+                <tr><td>Diff</td><td><kbd>b</kbd></td><td>Pilih baseline</td></tr>
+                <tr><td>Diff</td><td><kbd>e</kbd> / <kbd>m</kbd></td><td>Expand/collapse / ganti mode</td></tr>
+                <tr><td>Diff</td><td><kbd>n</kbd>/<kbd>p</kbd></td><td>Hunk berikutnya/sebelumnya</td></tr>
+                <tr><td>Batch config</td><td><kbd>←</kbd>/<kbd>→</kbd>, <kbd>c</kbd>, <kbd>r</kbd></td><td>Kedalaman, mode, retry</td></tr>
+                <tr><td>Batch hasil</td><td><kbd>↑</kbd>/<kbd>↓</kbd>, <kbd>Tab</kbd></td><td>Pilih hasil, ganti tab</td></tr>
+                <tr><td>New item</td><td><kbd>Ctrl</kbd>+<kbd>T</kbd></td><td>Ganti tipe request/folder</td></tr>
+                <tr><td>New item</td><td><kbd>Ctrl</kbd>+<kbd>F</kbd> / <kbd>/</kbd></td><td>Cari folder tujuan</td></tr>
+                <tr><td>New item</td><td><kbd>m</kbd></td><td>Ganti method (saat fokus daftar)</td></tr>
+                <tr><td>Save</td><td><kbd>Tab</kbd></td><td>Pindah nama ↔ folder</td></tr>
+                <tr><td>Save</td><td><kbd>Enter</kbd></td><td>Simpan</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Environment, Scope, Wire</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Konteks</th><th>Shortcut</th><th>Aksi</th></tr></thead>
+              <tbody>
+                <tr><td>Environment</td><td><kbd>Tab</kbd>, <kbd>a</kbd>, <kbd>e</kbd>, <kbd>d</kbd></td><td>Pindah panel, tambah, edit, hapus</td></tr>
+                <tr><td>Scope</td><td><kbd>a</kbd>, <kbd>d</kbd></td><td>Tambah/hapus origin</td></tr>
+                <tr><td>Wire</td><td><kbd>i</kbd>, <kbd>t</kbd>, <kbd>/</kbd></td><td>Inspector, waktu, filter</td></tr>
+                <tr><td>Wire</td><td><kbd>[</kbd>/<kbd>]</kbd>, <kbd>G</kbd></td><td>Scrub event, auto-follow</td></tr>
+                <tr><td>Wire</td><td><kbd>Ctrl</kbd>+<kbd>S</kbd></td><td>Export sesi JSONL</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- 18 -->
+        <section class="doc-section" id="konfigurasi" data-title="Konfigurasi dan lokasi file" data-keywords="konfigurasi config file global.yaml response_ratio scope envs history.db trash sessions termapi collections dir home project root environment variable TERMAPI_COLLECTIONS_DIR">
+          <span class="section-kicker">18 · REFERENSI</span>
+          <h2>Konfigurasi &amp; lokasi file<a class="anchor" href="#konfigurasi" aria-label="Tautan bagian">#</a></h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Path</th><th>Isi</th><th>Dibuat oleh</th></tr></thead>
+              <tbody>
+                <tr><td><code>&lt;root&gt;/collections/</code></td><td>Collection, folder metadata, request YAML</td><td>Sidebar / New Item / Save</td></tr>
+                <tr><td><code>&lt;root&gt;/.termapi/global.yaml</code></td><td>Global Scope dan <code>response_ratio</code></td><td>Scope manager / split resize</td></tr>
+                <tr><td><code>&lt;root&gt;/.termapi/envs/&lt;nama&gt;.yaml</code></td><td>Environment variables</td><td>Environment manager</td></tr>
+                <tr><td><code>&lt;root&gt;/.termapi/history.db</code></td><td>SQLite history dan captured variables</td><td>History store</td></tr>
+                <tr><td><code>&lt;root&gt;/.termapi/trash/</code></td><td>Item terhapus (timestamp + nama)</td><td>Delete collection item</td></tr>
+                <tr><td><code>~/.termapi/sessions/</code></td><td>Export Wire Inspector (JSONL)</td><td>Wire <kbd>Ctrl</kbd>+<kbd>S</kbd></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h3><code>global.yaml</code></h3>
+          <pre><code>scope: |
+  https://api.example.com
+  http://localhost:8080
+response_ratio: 0.72</code></pre>
+          <ul>
+            <li><code>scope</code> — string origin dipisah newline. Bisa satu baris jika hanya satu origin.</li>
+            <li><code>response_ratio</code> — proporsi tinggi area response (0.1–0.9). Nilai di luar rentang dianggap default <code>0.72</code>. Diubah dengan <kbd>Ctrl</kbd>+<kbd>↑</kbd>/<kbd>↓</kbd> dan langsung disimpan.</li>
+          </ul>
+          <h3>Menentukan root proyek</h3>
+          <ol>
+            <li>TermAPI menelusuri dari direktori kerja ke atas sampai menemukan <code>go.mod</code>.</li>
+            <li>Jika tidak ditemukan, direktori kerja saat ini dipakai sebagai root.</li>
+            <li>Collections dapat diarahkan ke folder lain dengan <code>TERMAPI_COLLECTIONS_DIR=/path/to/collections ./termapi</code>.</li>
+          </ol>
+          <div class="callout">
+            <span class="label">Tidak ada file tema</span>
+            Tema saat ini didefinisikan di kode (<code>internal/ui/styles/theme.go</code>) dan belum dapat diganti lewat konfigurasi. Ikon Nerd Font juga diatur lewat variabel Go, bukan file config.
+          </div>
+        </section>
+
+        <!-- 19 -->
+        <section class="doc-section" id="format" data-title="Format file request lengkap" data-keywords="format yaml request contoh params headers body auth cookies multipart form binary graphql legacy normalize">
+          <span class="section-kicker">19 · REFERENSI</span>
+          <h2>Format request lengkap<a class="anchor" href="#format" aria-label="Tautan bagian">#</a></h2>
+          <p>Contoh berikut memakai format terstruktur modern. TermAPI masih menerima format legacy dan menormalkannya saat dimuat.</p>
+
+          <h3>JSON + query + path parameter</h3>
+          <pre><code>id: update-user
+name: Update user
+method: PUT
+url: "{{BASE_URL}}/users/{user_id}"
+params_list:
+  - key: user_id
+    value: "{{user_id}}"
+  - key: dry_run
+    value: "false"
+headers_list:
+  - key: Accept
+    value: application/json
+body_spec:
+  type: json
+  raw: |
+    {
+      "name": "Ada",
+      "active": true
+    }
+auth:
+  type: bearer
+  token: "{{token}}"</code></pre>
+
+          <h3>Form URL encoded</h3>
+          <pre><code>body_spec:
+  type: form
+  fields:
+    - key: username
+      value: admin
+    - key: password
+      value: "{{password}}"</code></pre>
+
+          <h3>Multipart dengan file</h3>
+          <pre><code>body_spec:
+  type: multipart
+  fields:
+    - key: avatar
+      value: ./assets/avatar.png
+      kind: file
+    - key: caption
+      value: profile picture
+      kind: text</code></pre>
+
+          <h3>Binary</h3>
+          <pre><code>body_spec:
+  type: binary
+  file: ./payload.bin
+  content_type: application/octet-stream</code></pre>
+
+          <h3>API key di query</h3>
+          <pre><code>auth:
+  type: api_key
+  key: api_key
+  value: "{{API_KEY}}"
+  add_to: query</code></pre>
+
+          <h3>Legacy</h3>
+          <pre><code>id: list-users
+name: List users
+method: GET
+url: https://api.example.com/users
+headers:
+  Accept: application/json
+body: ""</code></pre>
+          <p>Saat disimpan, TermAPI menulis ulang field terstruktur dan mengosongkan field legacy.</p>
+        </section>
+
+        <!-- 20 -->
+        <section class="doc-section" id="arsitektur" data-title="Arsitektur dan struktur paket" data-keywords="arsitektur architecture struktur package folder go bubbletea elm model update view data flow request lifecycle styles theme overlay routing tests">
+          <span class="section-kicker">20 · REFERENSI</span>
+          <h2>Arsitektur<a class="anchor" href="#arsitektur" aria-label="Tautan bagian">#</a></h2>
+          <p>TermAPI mengikuti arsitektur Elm (Model–Update–View) melalui Bubble Tea. State utama ada di <code>ui.AppModel</code>; setiap layar overlay memiliki model/update/view sendiri.</p>
+          <h3>Stack</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Komponen</th><th>Library</th><th>Peran</th></tr></thead>
+              <tbody>
+                <tr><td>TUI runtime</td><td><code>charm.land/bubbletea/v2</code></td><td>Event loop, alt-screen, mouse, command/msg.</td></tr>
+                <tr><td>Widget</td><td><code>charm.land/bubbles/v2</code></td><td>Textinput, textarea, viewport, spinner.</td></tr>
+                <tr><td>Styling</td><td><code>charm.land/lipgloss/v2</code></td><td>Layout, warna, border, padding.</td></tr>
+                <tr><td>Mouse zones</td><td><code>bubblezone/v2</code></td><td>Klik pada tab, sel, tombol.</td></tr>
+                <tr><td>Diff</td><td><code>go-udiff</code></td><td>Unified diff → hunk.</td></tr>
+                <tr><td>JSON filter</td><td><code>gjson</code></td><td>Filter response.</td></tr>
+                <tr><td>SQLite</td><td><code>mattn/go-sqlite3</code></td><td>History lokal (butuh CGO).</td></tr>
+                <tr><td>WebSocket</td><td><code>coder/websocket</code></td><td>Wire inspector WS.</td></tr>
+                <tr><td>gRPC</td><td><code>google.golang.org/grpc</code></td><td>Wire inspector gRPC.</td></tr>
+                <tr><td>YAML</td><td><code>gopkg.in/yaml.v3</code></td><td>Collection, environment, config.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Peta paket</h3>
+          <pre><code>cmd/
+├── termapi/            # entry point aplikasi
+├── mockserver/         # mock WS :8080/ws + gRPC :50051 (reflection)
+└── wirescreen-demo/    # demo Wire Inspector standalone
+
+internal/
+├── model/              # SharedState (env, session vars, ukuran)
+├── config/             # global.yaml (scope, response_ratio)
+├── collectionstore/    # load/save/create/delete collection YAML
+├── envstore/           # .termapi/envs/*.yaml
+├── historydb/          # SQLite: runs, captured variables, filter
+├── proto/ws/           # WebSocket client
+├── proto/grpcx/        # gRPC client
+└── ui/
+    ├── app.go, model.go, view.go, update_*.go
+    ├── requestInput/   # request bar, tabs, KV, body, auth, response
+    ├── sidebar/        # explorer, search, create/delete
+    ├── historyscreen/  # history + preview response
+    ├── diffscreen/     # diff viewer A/B + baseline picker
+    ├── envscreen/      # environment manager
+    ├── scopescreen/    # global scope manager
+    ├── wirescreen/     # WS/gRPC inspector
+    ├── newscreen/      # new request/folder composer
+    ├── helpscreen/     # help overlay
+    ├── nav/            # navbar
+    └── styles/         # theme.go + styles.go (satu sumber visual)</code></pre>
+
+          <h3>Alur request</h3>
+          <div class="flow">
+            <div class="flow-step"><strong>Input</strong>ReqState mengumpulkan method, URL, params, headers, cookies, body, auth.</div>
+            <div class="flow-step"><strong>Resolve</strong>Session/env variables diganti, token khusus diterapkan.</div>
+            <div class="flow-step"><strong>Validasi</strong>URL, header, param, file body, dan Scope diperiksa.</div>
+            <div class="flow-step"><strong>Kirim</strong>HTTP client dengan timeout 30 s, cookie jar, redirect limit, tracing.</div>
+            <div class="flow-step"><strong>Format</strong>Body JSON diindentasi, header/cookie diurutkan, TLS/timing diekstrak.</div>
+            <div class="flow-step"><strong>Simpan</strong>Response masuk ke panel, history SQLite, dan session variables.</div>
+          </div>
+
+          <h3>Routing mode</h3>
+          <p><code>AppModel.Update</code> memeriksa overlay secara berurutan: New Item → Save → Batch chooser → Sidebar create prompt → Batch → History → Scope → Env → Diff → Search → Wire → main events. <code>AppModel.View</code> mengikuti urutan yang sama. Ini memastikan input tidak bocor ke editor saat overlay aktif.</p>
+
+          <h3>Styling</h3>
+          <p>Semua warna, border, ikon, dan spacing berasal dari <code>internal/ui/styles/theme.go</code>. Warna semantik dipakai untuk status HTTP dan method; aksen cyan untuk fokus/interaksi. Diff Viewer juga memakai palet yang sama.</p>
+        </section>
+
+        <!-- 21 -->
+        <section class="doc-section" id="pengembangan" data-title="Pengembangan dan pengujian" data-keywords="development pengembangan kontribusi test build go test vet gofmt mockserver wirescreen demo server3 test files menambah fitur docs">
+          <span class="section-kicker">21 · REFERENSI</span>
+          <h2>Pengembangan<a class="anchor" href="#pengembangan" aria-label="Tautan bagian">#</a></h2>
+          <h3>Perintah harian</h3>
+          <pre><code># format
+gofmt -w ./cmd ./internal
+
+# build
+CGO_ENABLED=1 go build ./...
+CGO_ENABLED=1 go build -o termapi ./cmd/termapi
+
+# test
+go test ./...
+go test ./internal/ui/... -v
+go test -race ./internal/ui/...
+
+# static analysis
+go vet ./...</code></pre>
+          <h3>Mock server</h3>
+          <pre><code>go run ./cmd/mockserver
+# WebSocket : ws://localhost:8080/ws
+# gRPC      : localhost:50051 (reflection enabled)</code></pre>
+          <p>Mock WebSocket mengirim pesan <code>welcome</code>, tick setiap 2 detik, dan meng-echo pesan klien. Mock gRPC mengaktifkan reflection sehingga bisa diuji dengan client yang mendukung reflection.</p>
+          <h3>Demo Wire Inspector</h3>
+          <pre><code>go run ./cmd/wirescreen-demo ws://localhost:8080/ws</code></pre>
+          <h3>Echo server WebSocket</h3>
+          <pre><code>go run ./server3   # ws://localhost:8080/ws</code></pre>
+          <h3>Menambah fitur</h3>
+          <ol>
+            <li>Untuk fitur yang punya layar sendiri, buat paket di <code>internal/ui/&lt;nama&gt;</code> dengan <code>Model</code>, <code>Update</code>, <code>View</code>, dan test.</li>
+            <li>Tambahkan field + flag mode di <code>AppModel</code>, lalu daftarkan routing di <code>app.go</code> dan <code>view.go</code>.</li>
+            <li>Tambahkan shortcut global di <code>update_keys.go</code>; shortcut kontekstual di paket layar masing-masing.</li>
+            <li>Gunakan warna dari <code>styles</code>, jangan hardcode hex baru.</li>
+            <li>Tambahkan test untuk logika layout/keys serta data store.</li>
+          </ol>
+          <h3>Test yang ada</h3>
+          <p>Repositori memiliki 31 file test, mencakup collection normalization, history delete/filter, diff layout/picker, env/scope, sidebar search, response find/selection, layout split, request model, wire screen, dan lain-lain.</p>
+          <h3>Dokumentasi ini</h3>
+          <p>Situs dokumentasi adalah HTML statis tanpa build tool:</p>
+          <pre><code>docs/
+├── index.html
+└── assets/
+    ├── styles.css
+    └── app.js</code></pre>
+          <p>Buka <code>docs/index.html</code> langsung di browser atau jalankan server statis lokal:</p>
+          <pre><code>python3 -m http.server 8000 -d docs
+# buka http://localhost:8000</code></pre>
+        </section>
+
+        <!-- 22 -->
+        <section class="doc-section" id="troubleshooting" data-title="Troubleshooting" data-keywords="troubleshooting error masalah tidak bisa jalan credentials blocked scope dns tls timeout sqlite cgo gcc window too small nerd font collections history database locked diff kosong">
+          <span class="section-kicker">22 · REFERENSI</span>
+          <h2>Troubleshooting<a class="anchor" href="#troubleshooting" aria-label="Tautan bagian">#</a></h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Gejala</th><th>Penyebab umum</th><th>Solusi</th></tr></thead>
+              <tbody>
+                <tr><td>Build gagal pada <code>go-sqlite3</code></td><td>CGO nonaktif atau compiler C tidak ada</td><td>Set <code>CGO_ENABLED=1</code>, install <code>gcc</code>/<code>build-essential</code>.</td></tr>
+                <tr><td>“Window terlalu kecil”</td><td>Terminal &lt; 105×32</td><td>Perbesar terminal atau kecilkan font.</td></tr>
+                <tr><td><code>credentials blocked</code></td><td>Origin tidak ada di allowlist</td><td><kbd>Ctrl</kbd>+<kbd>G</kbd>, tambahkan <code>scheme://host[:port]</code> persis.</td></tr>
+                <tr><td>Origin ditolak saat ditambahkan</td><td>Menyertakan path/query/wildcard</td><td>Gunakan hanya origin, contoh <code>https://api.example.com</code>.</td></tr>
+                <tr><td><code>Host not found</code></td><td>DNS/VPN/proxy</td><td>Periksa ejaan host, koneksi, dan DNS. Coba <code>curl</code> dari terminal.</td></tr>
+                <tr><td><code>Certificate / TLS verification failed</code></td><td>Sertifikat self-signed atau CA tidak dipercaya</td><td>Gunakan <code>http://</code> untuk lokal atau tambahkan CA ke trust store sistem.</td></tr>
+                <tr><td><code>Connection refused</code></td><td>Server tidak berjalan / port salah</td><td>Pastikan server listening dan port benar.</td></tr>
+                <tr><td>Request timeout</td><td>Server lambat/down</td><td>Periksa server; timeout client tetap 30 detik.</td></tr>
+                <tr><td>Response terpotong</td><td>Melebihi 2 MiB</td><td>Gunakan filter gjson pada server/response lebih kecil; batas client tidak dapat diubah lewat config.</td></tr>
+                <tr><td>Diff bilang tidak ada perubahan padahal berbeda</td><td>Perbedaan hanya urutan key/spasi JSON, atau yang berbeda ada di header/status</td><td>Normalisasi JSON mengabaikan urutan/spasi. Diff hanya membandingkan body.</td></tr>
+                <tr><td>Diff membandingkan request yang salah</td><td>Tidak ada history method+URL yang cocok</td><td>Lihat baris “Sumber” di viewer. Jalankan request yang sama atau pilih baseline dengan <kbd>b</kbd>.</td></tr>
+                <tr><td>Collection tidak muncul</td><td>Salah root kerja atau folder bukan collection</td><td>Jalankan dari root proyek (dekat <code>go.mod</code>) atau set <code>TERMAPI_COLLECTIONS_DIR</code>. Collection adalah subfolder langsung dari <code>collections/</code>.</td></tr>
+                <tr><td>History tidak bisa dibuka</td><td>Izin tulis atau database rusak/locked</td><td>Pastikan <code>.termapi/</code> dapat ditulis. Tutup proses lain yang memakai DB. SQLite memakai satu koneksi.</td></tr>
+                <tr><td>Ikon tampak kotak</td><td>Font tidak mendukung glyph</td><td>Gunakan Nerd Font. Fallback ASCII tersedia tetapi harus diaktifkan di kode (<code>styles.UseNerdIcons=false</code>) dan rebuild.</td></tr>
+                <tr><td>Variable tidak terganti</td><td>Nama/key tidak cocok atau env tidak aktif</td><td>Pastikan sintaks <code>{{KEY}}</code>, environment aktif, dan tidak ada spasi tambahan.</td></tr>
+                <tr><td>Body GET tidak terkirim</td><td>Perilaku HTTP client</td><td>Gunakan POST/PUT/PATCH atau method lain yang mengizinkan body.</td></tr>
+                <tr><td>Wire gRPC tidak merespons</td><td>Server tidak mendukung reflection / method composer tetap</td><td>Gunakan server dengan reflection dan pahami batasan method unary tetap.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- 23 -->
+        <section class="doc-section" id="batasan" data-title="Batasan saat ini" data-keywords="batasan limitations roadmap belum ada curl import rag fts5 command palette proxy mtls grpc streaming themes diff headers history prune export import">
+          <span class="section-kicker">23 · REFERENSI</span>
+          <h2>Batasan saat ini<a class="anchor" href="#batasan" aria-label="Tautan bagian">#</a></h2>
+          <p>Dokumentasi ini hanya mencakup fitur yang benar-benar ada di kode saat ini. Beberapa ide di <code>DESIGN.md</code> belum diimplementasikan.</p>
+          <div class="two-col">
+            <div>
+              <h4>Yang belum tersedia</h4>
+              <ul class="xlist">
+                <li>Import curl / OpenAPI / Postman.</li>
+                <li>Command palette <kbd>Ctrl</kbd>+<kbd>K</kbd> (tombol ditelan, belum ada UI).</li>
+                <li>RAG / FTS5 index lokal yang disebut di DESIGN.md.</li>
+                <li>Pengaturan proxy eksplisit di UI (transport Go tetap menghormati environment variable proxy standar), mutual TLS, custom CA, dan pengaturan transport lanjutan.</li>
+                <li>Streaming/SSE viewer terpisah (response dibaca sampai selesai).</li>
+                <li>Diff header/status/cookie.</li>
+                <li>Pemilihan dua run bebas untuk B (B selalu run terbaru saat viewer dibuka).</li>
+                <li>gRPC dinamis: pilih method, proto, metadata, streaming, TLS.</li>
+                <li>Header kustom untuk koneksi WebSocket dari UI.</li>
+                <li>Auto-prune history atau export/import collection lewat UI.</li>
+                <li>Tema/kulit yang bisa diganti lewat config.</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Yang sudah kuat</h4>
+              <ul class="checklist">
+                <li>HTTP request lengkap dengan body/auth beragam.</li>
+                <li>Scope allowlist dan pengecekan redirect.</li>
+                <li>Collection YAML + trash recovery.</li>
+                <li>Environment + session variable + chaining.</li>
+                <li>History SQLite dengan captured variables.</li>
+                <li>Diff response per request dengan baseline picker.</li>
+                <li>Batch paralel/berurutan dengan retry.</li>
+                <li>Wire inspector WebSocket/gRPC dasar.</li>
+                <li>Tema konsisten dan layout responsif di terminal.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- 24 -->
+        <section class="doc-section" id="faq" data-title="FAQ" data-keywords="faq pertanyaan umum compare response lama baseline secrets aman multiple environment curl import windows mac linux offline telemetry">
+          <span class="section-kicker">24 · REFERENSI</span>
+          <h2>FAQ<a class="anchor" href="#faq" aria-label="Tautan bagian">#</a></h2>
+
+          <h3>Apakah diff membandingkan request lama dengan request baru?</h3>
+          <p>Tidak. Yang dibandingkan adalah <strong>body response</strong>. A adalah response dari run sebelumnya, B adalah response dari run terbaru. Definisi request (URL, header, body) tidak di-diff.</p>
+
+          <h3>Bagaimana membandingkan response yang sudah lama, setelah banyak request lain?</h3>
+          <p>Buka Diff Viewer dari request tersebut (<kbd>Ctrl</kbd>+<kbd>D</kbd>), lalu tekan <kbd>b</kbd> dan pilih run lama sebagai baseline. Selama run tersebut masih ada di history, ia bisa dipilih. Filter otomatis menggunakan method + URL, sehingga request lain tidak menggeser baseline.</p>
+
+          <h3>Apakah data saya dikirim ke cloud?</h3>
+          <p>Tidak. Semua collection, environment, history, dan export disimpan lokal. Tidak ada telemetry atau akun.</p>
+
+          <h3>Apakah secret terenkripsi?</h3>
+          <p>Tidak. File YAML dan SQLite menyimpan teks biasa. Gunakan izin filesystem yang ketat dan jangan commit secret.</p>
+
+          <h3>Bisakah memakai beberapa environment sekaligus?</h3>
+          <p>Tidak. Hanya satu environment aktif. Session variables dapat menimpa nilai environment untuk key tertentu.</p>
+
+          <h3>Apakah bisa dijalankan di Windows?</h3>
+          <p>Kode Go dan Bubble Tea bersifat lintas platform, tetapi proyek ini memakai SQLite CGO. Build di Windows memerlukan toolchain C yang kompatibel. Repositori belum menyertakan panduan atau CI khusus Windows.</p>
+
+          <h3>Kenapa <kbd>Ctrl</kbd>+<kbd>D</kbd> kadang menghapus, kadang membuka diff?</h3>
+          <p>Perilakunya kontekstual: di sidebar ia menghapus request; di History ia menghapus run; di layar utama dengan sidebar tidak fokus ia membuka Diff Viewer.</p>
+
+          <h3>Kenapa ada request yang tidak di-retry?</h3>
+          <p>Retry manual hanya untuk method idempoten (GET, HEAD, OPTIONS, PUT, DELETE) agar POST/PATCH tidak terkirim ganda. Batch runner dapat me-retry semua method sesuai konfigurasi.</p>
+
+          <h3>Apakah response yang error masuk history?</h3>
+          <p>Ya. Run yang gagal disimpan dengan status code 0 dan pesan error sebagai body. Ini memungkinkan investigasi dan diff kegagalan.</p>
+
+          <h3>Bagaimana cara update dokumentasi ini?</h3>
+          <p>Edit <code>docs/index.html</code>, <code>docs/assets/styles.css</code>, atau <code>docs/assets/app.js</code>. Tidak ada proses build; cukup refresh browser. Tambahkan <code>id</code> section dan link sidebar jika menambah bagian baru.</p>
+        </section>
+
+        <footer class="doc-footer">
+          <span>TermAPI · Dokumentasi lengkap · Dibuat dari source code proyek.</span>
+          <span>Go 1.27 · Bubble Tea v2 · SQLite · HTML statis tanpa dependency.</span>
+        </footer>
+      </div>
+    </main>
+  </div>
+
+  <button id="to-top" type="button" aria-label="Kembali ke atas">↑</button>
+  <script src="assets/app.js" defer></script>
+</body>
+</html>

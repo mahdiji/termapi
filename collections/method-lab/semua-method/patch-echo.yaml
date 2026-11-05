@@ -1,0 +1,22 @@
+id: patch-echo-update-sebagian
+name: PATCH echo (update sebagian)
+method: PATCH
+url: http://localhost:8084/api/echo
+params_list:
+    - {}
+headers_list:
+    - key: Accept
+      value: application/json
+    - key: Content-Type
+      value: application/json
+body_spec:
+    type: json
+    raw: |-
+        {
+          "status": "paid"
+        }
+auth:
+    type: none
+    add_to: header
+cookies:
+    - {}

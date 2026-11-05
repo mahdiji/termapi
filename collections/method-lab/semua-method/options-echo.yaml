@@ -1,0 +1,12 @@
+id: options-echo
+name: OPTIONS echo (cek method)
+method: OPTIONS
+url: http://localhost:8084/api/echo
+headers_list:
+    - key: Accept
+      value: application/json
+body_spec:
+    type: none
+auth:
+    type: none
+    add_to: header

@@ -1,0 +1,804 @@
+package sidebar
+
+import (
+	"strconv"
+	"strings"
+
+	"api/internal/model"
+	"api/internal/ui/sidebar/history"
+	"api/internal/ui/styles"
+
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
+	zone "github.com/lrstanley/bubblezone/v2"
+)
+
+type itemType string
+
+const (
+	itemTypeAccordion    itemType = "accordion"
+	itemTypeFolder       itemType = "folder"
+	itemTypeFile         itemType = "file"
+	itemTypeAddSubfolder itemType = "add_subfolder"
+	itemTypeAddRootFolder itemType = "add_root_folder"
+	itemTypeHistoryItem  itemType = "history_item"
+)
+
+type flatItem struct {
+	ZoneID       string
+	Text         string
+	Style        lipgloss.Style
+	Type         itemType
+	NodePtr      *TreeNode
+	ParentZoneID string
+}
+
+type TreeNode struct {
+	Name     string
+	IsFolder bool
+	Open     bool
+	ZoneID   string
+	Children []TreeNode
+}
+
+type Model struct {
+	State           *model.SharedState
+	Widht           int
+	Height          int
+	Nodes           []TreeNode
+	WorkspacesNodes []TreeNode
+	CollectionsOpen bool
+	WorkspacesOpen  bool
+	HistoryOpen     bool
+	SelectedZoneID  string
+	CursorIdx       int
+	FolderCounter   int
+	ScrollY         int
+	ScrollX         int
+	IsFocused       bool
+	HistoryModel    *history.Model
+}
+
+func New(state *model.SharedState) *Model {
+	w := 38
+	h := 45
+
+	if state != nil {
+		if state.Widht > 0 {
+			calculatedW := state.Widht / 3
+			if calculatedW < 24 {
+				w = 24
+			} else {
+				w = calculatedW
+			}
+		}
+		if state.Height > 0 {
+			h = state.Height - 4
+			if h < 10 {
+				h = 10
+			}
+		}
+	}
+
+	nodes := []TreeNode{
+		{
+			Name:     "API Requests",
+			IsFolder: true,
+			Open:     true,
+			ZoneID:   "folder_requests",
+			Children: []TreeNode{
+				{Name: "GET /users", IsFolder: false, ZoneID: "file_get_users"},
+				{Name: "POST /users", IsFolder: false, ZoneID: "file_post_users"},
+				{Name: "PUT /users/:id", IsFolder: false, ZoneID: "file_put_users"},
+				{Name: "DELETE /users/:id", IsFolder: false, ZoneID: "file_delete_users"},
+			},
+		},
+		{
+			Name:     "Authentication",
+			IsFolder: true,
+			Open:     false,
+			ZoneID:   "folder_auth",
+			Children: []TreeNode{
+				{Name: "POST /login", IsFolder: false, ZoneID: "file_login"},
+				{Name: "POST /register", IsFolder: false, ZoneID: "file_register"},
+				{Name: "POST /refresh", IsFolder: false, ZoneID: "file_refresh"},
+			},
+		},
+		{
+			Name:     "Environments",
+			IsFolder: true,
+			Open:     false,
+			ZoneID:   "folder_env",
+			Children: []TreeNode{
+				{Name: "development.env", IsFolder: false, ZoneID: "file_dev_env"},
+				{Name: "production.env", IsFolder: false, ZoneID: "file_prod_env"},
+			},
+		},
+	}
+
+	workspacesNodes := []TreeNode{
+		{
+			Name:     "Default Workspace",
+			IsFolder: true,
+			Open:     true,
+			ZoneID:   "folder_default_ws",
+			Children: []TreeNode{
+				{Name: "production.env", IsFolder: false, ZoneID: "file_prod_ws"},
+				{Name: "staging.env", IsFolder: false, ZoneID: "file_staging_ws"},
+			},
+		},
+	}
+
+	return &Model{
+		State:           state,
+		Widht:           w,
+		Height:          h,
+		Nodes:           nodes,
+		WorkspacesNodes: workspacesNodes,
+		CollectionsOpen: true,
+		WorkspacesOpen:  false,
+		HistoryOpen:     false,
+		SelectedZoneID:  "accordion_collections",
+		CursorIdx:       0,
+		FolderCounter:   1,
+		ScrollY:         0,
+		ScrollX:         0,
+		HistoryModel:    history.New(),
+	}
+}
+
+func (m *Model) SetSize(windowWidth, windowHeight int) {
+	if m == nil {
+		return
+	}
+
+	w := windowWidth / 3
+	if w < 24 {
+		w = 24
+	}
+	if w > 60 {
+		w = 60
+	}
+
+	h := windowHeight - 4
+	if h < 10 {
+		h = 10
+	}
+
+	m.Widht = w
+	m.Height = h
+	if m.HistoryModel != nil {
+		m.HistoryModel.SetWidth(w)
+	}
+}
+
+func addSubfolderToNode(nodes []TreeNode, targetZoneID string, newName string, counter *int) bool {
+	for i := range nodes {
+		if nodes[i].ZoneID == targetZoneID && nodes[i].IsFolder {
+			*counter++
+			newZoneID := "folder_sub_" + strconv.Itoa(*counter)
+			nodes[i].Children = append(nodes[i].Children, TreeNode{
+				Name:     newName,
+				IsFolder: true,
+				Open:     true,
+				ZoneID:   newZoneID,
+				Children: []TreeNode{},
+			})
+			nodes[i].Open = true
+			return true
+		}
+		if len(nodes[i].Children) > 0 {
+			if addSubfolderToNode(nodes[i].Children, targetZoneID, newName, counter) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func getStyledItem(fgHex string, isSelected bool) lipgloss.Style {
+	if isSelected {
+		return lipgloss.NewStyle().
+			Foreground(lipgloss.Color(fgHex)).
+			Background(lipgloss.Color("#3c1854")).
+			Bold(true)
+	}
+	return lipgloss.NewStyle().Foreground(lipgloss.Color(fgHex))
+}
+
+func (m *Model) getFlatItems() []flatItem {
+	var items []flatItem
+
+	// 1. COLLECTIONS Accordion
+	colSymbol := "[+] "
+	if m.CollectionsOpen {
+		colSymbol = "[-] "
+	}
+	colStyle := getStyledItem("#00E5FF", "accordion_collections" == m.SelectedZoneID).Bold(true)
+	items = append(items, flatItem{
+		ZoneID: "accordion_collections",
+		Text:   colSymbol + "COLLECTIONS",
+		Style:  colStyle,
+		Type:   itemTypeAccordion,
+	})
+
+	if m.CollectionsOpen {
+		var collectTree func(nodes []TreeNode, prefix string)
+		collectTree = func(nodes []TreeNode, prefix string) {
+			for i, node := range nodes {
+				isLast := (i == len(nodes)-1)
+				branch := "├── "
+				if isLast {
+					branch = "└── "
+				}
+				currentPrefix := prefix + branch
+
+				if node.IsFolder {
+					symbol := "[+] "
+					if node.Open {
+						symbol = "[-] "
+					}
+					folderText := currentPrefix + symbol + node.Name + "/"
+					fStyle := getStyledItem("#00E5FF", node.ZoneID == m.SelectedZoneID)
+					items = append(items, flatItem{
+						ZoneID:       node.ZoneID,
+						Text:         folderText,
+						Style:        fStyle,
+						Type:         itemTypeFolder,
+						NodePtr:      &nodes[i],
+						ParentZoneID: "",
+					})
+
+					if node.Open {
+						nextPrefix := prefix + "│   "
+						if isLast {
+							nextPrefix = prefix + "    "
+						}
+						collectTree(node.Children, nextPrefix)
+
+						// + Add Folder button
+						addPrefix := nextPrefix + "├── "
+						addText := addPrefix + "+ Add Folder"
+						addStyle := getStyledItem("#7D56F4", (node.ZoneID+"_add_sub") == m.SelectedZoneID)
+						addZoneID := node.ZoneID + "_add_sub"
+						items = append(items, flatItem{
+							ZoneID:       addZoneID,
+							Text:         addText,
+							Style:        addStyle,
+							Type:         itemTypeAddSubfolder,
+							NodePtr:      &nodes[i],
+							ParentZoneID: node.ZoneID,
+						})
+					}
+				} else {
+					fileText := currentPrefix + node.Name
+					fileFg := "#A8A8A8"
+					if strings.HasPrefix(node.Name, "GET") {
+						fileFg = "#04B575"
+					} else if strings.HasPrefix(node.Name, "POST") {
+						fileFg = "#00E5FF"
+					} else if strings.HasPrefix(node.Name, "PUT") {
+						fileFg = "#FFB86C"
+					} else if strings.HasPrefix(node.Name, "DELETE") {
+						fileFg = "#FF5555"
+					}
+
+					fileStyle := getStyledItem(fileFg, node.ZoneID == m.SelectedZoneID)
+					items = append(items, flatItem{
+						ZoneID:  node.ZoneID,
+						Text:    fileText,
+						Style:   fileStyle,
+						Type:    itemTypeFile,
+						NodePtr: &nodes[i],
+					})
+				}
+			}
+		}
+		collectTree(m.Nodes, "")
+
+		// Add Root Folder button at the bottom of Collections
+		rootAddText := "  + Add Folder"
+		rootAddStyle := getStyledItem("#7D56F4", "collections_add_root" == m.SelectedZoneID).Bold(true)
+		rootAddZoneID := "collections_add_root"
+		items = append(items, flatItem{
+			ZoneID: rootAddZoneID,
+			Text:   rootAddText,
+			Style:  rootAddStyle,
+			Type:   itemTypeAddRootFolder,
+		})
+	}
+
+	// 2. WORKSPACES Accordion
+	wsSymbol := "[+] "
+	if m.WorkspacesOpen {
+		wsSymbol = "[-] "
+	}
+	wsStyle := getStyledItem("#00E5FF", "accordion_workspaces" == m.SelectedZoneID).Bold(true)
+	items = append(items, flatItem{
+		ZoneID: "accordion_workspaces",
+		Text:   wsSymbol + "WORKSPACES",
+		Style:  wsStyle,
+		Type:   itemTypeAccordion,
+	})
+
+	if m.WorkspacesOpen {
+		var collectWS func(nodes []TreeNode, prefix string)
+		collectWS = func(nodes []TreeNode, prefix string) {
+			for i, node := range nodes {
+				isLast := (i == len(nodes)-1)
+				branch := "├── "
+				if isLast {
+					branch = "└── "
+				}
+				currentPrefix := prefix + branch
+
+				if node.IsFolder {
+					symbol := "[+] "
+					if node.Open {
+						symbol = "[-] "
+					}
+					folderText := currentPrefix + symbol + node.Name + "/"
+					fStyle := getStyledItem("#00E5FF", node.ZoneID == m.SelectedZoneID)
+					items = append(items, flatItem{
+						ZoneID:  node.ZoneID,
+						Text:    folderText,
+						Style:   fStyle,
+						Type:    itemTypeFolder,
+						NodePtr: &nodes[i],
+					})
+					if node.Open {
+						nextPrefix := prefix + "│   "
+						if isLast {
+							nextPrefix = prefix + "    "
+						}
+						collectWS(node.Children, nextPrefix)
+					}
+				} else {
+					fileText := currentPrefix + node.Name
+					fileStyle := getStyledItem("#A8A8A8", node.ZoneID == m.SelectedZoneID)
+					items = append(items, flatItem{
+						ZoneID:  node.ZoneID,
+						Text:    fileText,
+						Style:   fileStyle,
+						Type:    itemTypeFile,
+						NodePtr: &nodes[i],
+					})
+				}
+			}
+		}
+		collectWS(m.WorkspacesNodes, "")
+	}
+
+	// 3. HISTORY Accordion
+	histSymbol := "[+] "
+	if m.HistoryOpen {
+		histSymbol = "[-] "
+	}
+	histStyle := getStyledItem("#00E5FF", "accordion_history" == m.SelectedZoneID).Bold(true)
+	items = append(items, flatItem{
+		ZoneID: "accordion_history",
+		Text:   histSymbol + "HISTORY",
+		Style:  histStyle,
+		Type:   itemTypeAccordion,
+	})
+
+	if m.HistoryOpen && m.HistoryModel != nil {
+		for i, hItem := range m.HistoryModel.Items {
+			hZoneID := "history_item_" + strconv.Itoa(i)
+			hText := "    " + hItem
+			hStyle := getStyledItem("#888888", hZoneID == m.SelectedZoneID)
+			items = append(items, flatItem{
+				ZoneID: hZoneID,
+				Text:   hText,
+				Style:  hStyle,
+				Type:   itemTypeHistoryItem,
+			})
+		}
+	}
+
+	return items
+}
+
+func (m *Model) Update(msg tea.Msg) (*Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		m.IsFocused = true
+		if m.State != nil {
+			m.State.TabActive = 1
+		}
+		items := m.getFlatItems()
+
+		// Calculate maxScrollX
+		innerW := m.Widht - 2
+		if innerW < 22 {
+			innerW = 22
+		}
+		maxScrollX := 0
+		for _, it := range items {
+			w := lipgloss.Width(it.Text)
+			if w > maxScrollX {
+				maxScrollX = w
+			}
+		}
+		maxScrollX -= innerW
+		if maxScrollX < 0 {
+			maxScrollX = 0
+		}
+
+		switch msg.String() {
+		case "left", "h":
+			if m.ScrollX > 0 {
+				m.ScrollX--
+			}
+			return m, nil
+		case "right", "l":
+			if m.ScrollX < maxScrollX {
+				m.ScrollX++
+			}
+			return m, nil
+		case "shift+left", "H":
+			m.ScrollX -= 5
+			if m.ScrollX < 0 {
+				m.ScrollX = 0
+			}
+			return m, nil
+		case "shift+right", "L":
+			m.ScrollX += 5
+			if m.ScrollX > maxScrollX {
+				m.ScrollX = maxScrollX
+			}
+			return m, nil
+		case "up", "k":
+			if m.CursorIdx > 0 {
+				m.CursorIdx--
+				if m.CursorIdx < len(items) {
+					m.SelectedZoneID = items[m.CursorIdx].ZoneID
+				}
+			}
+			return m, nil
+		case "down", "j":
+			if m.CursorIdx < len(items)-1 {
+				m.CursorIdx++
+				if m.CursorIdx < len(items) {
+					m.SelectedZoneID = items[m.CursorIdx].ZoneID
+				}
+			}
+			return m, nil
+		case "enter", " ":
+			for _, item := range items {
+				if item.ZoneID == m.SelectedZoneID {
+					switch item.Type {
+					case itemTypeAccordion:
+						if item.ZoneID == "accordion_collections" {
+							m.CollectionsOpen = !m.CollectionsOpen
+						} else if item.ZoneID == "accordion_workspaces" {
+							m.WorkspacesOpen = !m.WorkspacesOpen
+						} else if item.ZoneID == "accordion_history" {
+							m.HistoryOpen = !m.HistoryOpen
+						}
+					case itemTypeFolder:
+						if item.NodePtr != nil {
+							item.NodePtr.Open = !item.NodePtr.Open
+						}
+					case itemTypeAddSubfolder:
+						if item.NodePtr != nil {
+							m.FolderCounter++
+							subName := "Folder " + strconv.Itoa(m.FolderCounter)
+							item.NodePtr.Children = append(item.NodePtr.Children, TreeNode{
+								Name:     subName,
+								IsFolder: true,
+								Open:     true,
+								ZoneID:   "folder_sub_" + strconv.Itoa(m.FolderCounter),
+								Children: []TreeNode{},
+							})
+							item.NodePtr.Open = true
+						}
+					case itemTypeAddRootFolder:
+						m.FolderCounter++
+						rootName := "Folder " + strconv.Itoa(m.FolderCounter)
+						m.Nodes = append(m.Nodes, TreeNode{
+							Name:     rootName,
+							IsFolder: true,
+							Open:     true,
+							ZoneID:   "folder_root_" + strconv.Itoa(m.FolderCounter),
+							Children: []TreeNode{},
+						})
+					}
+				}
+			}
+			return m, nil
+		case "n", "N":
+			targetFolderID := m.SelectedZoneID
+			for _, item := range items {
+				if item.ZoneID == m.SelectedZoneID {
+					if item.Type == itemTypeFolder && item.NodePtr != nil {
+						targetFolderID = item.NodePtr.ZoneID
+					} else if item.Type == itemTypeAddSubfolder && item.ParentZoneID != "" {
+						targetFolderID = item.ParentZoneID
+					}
+					break
+				}
+			}
+			m.FolderCounter++
+			subName := "Folder " + strconv.Itoa(m.FolderCounter)
+			if addSubfolderToNode(m.Nodes, targetFolderID, subName, &m.FolderCounter) {
+				// Added successfully
+			} else {
+				if addSubfolderToNode(m.WorkspacesNodes, targetFolderID, subName, &m.FolderCounter) {
+					// Added to workspaces successfully
+				} else {
+					// Add to root collections if no specific folder matched
+					m.Nodes = append(m.Nodes, TreeNode{
+						Name:     subName,
+						IsFolder: true,
+						Open:     true,
+						ZoneID:   "folder_root_" + strconv.Itoa(m.FolderCounter),
+						Children: []TreeNode{},
+					})
+				}
+			}
+			return m, nil
+		}
+		return m, nil
+
+	case tea.MouseWheelMsg:
+		m.IsFocused = true
+		isShift := (msg.Mod & tea.ModShift) != 0
+
+		items := m.getFlatItems()
+		innerW := m.Widht - 2
+		if innerW < 22 {
+			innerW = 22
+		}
+		maxScrollX := 0
+		for _, it := range items {
+			w := lipgloss.Width(it.Text)
+			if w > maxScrollX {
+				maxScrollX = w
+			}
+		}
+		maxScrollX -= innerW
+		if maxScrollX < 0 {
+			maxScrollX = 0
+		}
+
+		switch msg.Button {
+		case tea.MouseWheelUp:
+			if isShift {
+				if m.ScrollX > 0 {
+					m.ScrollX--
+				}
+			} else {
+				if m.ScrollY > 0 {
+					m.ScrollY--
+				}
+			}
+		case tea.MouseWheelDown:
+			if isShift {
+				if m.ScrollX < maxScrollX {
+					m.ScrollX++
+				}
+			} else {
+				m.ScrollY++
+			}
+		case tea.MouseWheelLeft:
+			if m.ScrollX > 0 {
+				m.ScrollX--
+			}
+		case tea.MouseWheelRight:
+			if m.ScrollX < maxScrollX {
+				m.ScrollX++
+			}
+		}
+		return m, nil
+
+	case tea.MouseClickMsg:
+		if msg.Button != tea.MouseLeft {
+			return m, nil
+		}
+
+		m.IsFocused = true
+		if m.State != nil {
+			m.State.TabActive = 1
+		}
+
+		items := m.getFlatItems()
+		for i, item := range items {
+			if zone.Get(item.ZoneID).InBounds(msg) {
+				m.SelectedZoneID = item.ZoneID
+				m.CursorIdx = i
+				switch item.Type {
+				case itemTypeAccordion:
+					if item.ZoneID == "accordion_collections" {
+						m.CollectionsOpen = !m.CollectionsOpen
+					} else if item.ZoneID == "accordion_workspaces" {
+						m.WorkspacesOpen = !m.WorkspacesOpen
+					} else if item.ZoneID == "accordion_history" {
+						m.HistoryOpen = !m.HistoryOpen
+					}
+				case itemTypeFolder:
+					if item.NodePtr != nil {
+						item.NodePtr.Open = !item.NodePtr.Open
+					}
+				case itemTypeAddSubfolder:
+					if item.NodePtr != nil {
+						m.FolderCounter++
+						subName := "Folder " + strconv.Itoa(m.FolderCounter)
+						item.NodePtr.Children = append(item.NodePtr.Children, TreeNode{
+							Name:     subName,
+							IsFolder: true,
+							Open:     true,
+							ZoneID:   "folder_sub_" + strconv.Itoa(m.FolderCounter),
+							Children: []TreeNode{},
+						})
+						item.NodePtr.Open = true
+					}
+				case itemTypeAddRootFolder:
+					m.FolderCounter++
+					rootName := "Folder " + strconv.Itoa(m.FolderCounter)
+					m.Nodes = append(m.Nodes, TreeNode{
+						Name:     rootName,
+						IsFolder: true,
+						Open:     true,
+						ZoneID:   "folder_root_" + strconv.Itoa(m.FolderCounter),
+						Children: []TreeNode{},
+					})
+				}
+				break
+			}
+		}
+		return m, nil
+	}
+	return m, nil
+}
+
+func (m Model) View() string {
+	borderColor := lipgloss.Color("#3C3836")
+	if m.IsFocused {
+		borderColor = lipgloss.Color("#7D56F4")
+	}
+	borderStyle := lipgloss.NewStyle().Foreground(borderColor)
+
+	titleText := " 🗂️ Explorer "
+	var styledTitle string
+	if m.IsFocused {
+		styledTitle = lipgloss.NewStyle().Foreground(lipgloss.Color("#7D56F4")).Bold(true).Render(titleText)
+	} else {
+		styledTitle = styles.MethodStyle.Render(titleText)
+	}
+	titleWidth := lipgloss.Width(styledTitle)
+
+	innerW := m.Widht - 2
+	if innerW < 22 {
+		innerW = 22
+	}
+
+	innerH := m.Height - 2
+	if innerH < 5 {
+		innerH = 5
+	}
+
+	dashesBefore := "─"
+	remainingLen := innerW - lipgloss.Width(dashesBefore) - titleWidth
+	if remainingLen < 0 {
+		remainingLen = 0
+	}
+	dashesAfter := strings.Repeat("─", remainingLen)
+	topBorder := borderStyle.Render("╭" + dashesBefore) + styledTitle + borderStyle.Render(dashesAfter + "╮")
+
+	items := m.getFlatItems()
+
+	// Clamp ScrollX to maxScrollX
+	maxScrollX := 0
+	for _, it := range items {
+		w := lipgloss.Width(it.Text)
+		if w > maxScrollX {
+			maxScrollX = w
+		}
+	}
+	maxScrollX -= innerW
+	if maxScrollX < 0 {
+		maxScrollX = 0
+	}
+	if m.ScrollX > maxScrollX {
+		m.ScrollX = maxScrollX
+	}
+	if m.ScrollX < 0 {
+		m.ScrollX = 0
+	}
+
+	if m.CursorIdx >= len(items) {
+		m.CursorIdx = len(items) - 1
+	}
+	if m.CursorIdx < 0 {
+		m.CursorIdx = 0
+	}
+	if len(items) > 0 {
+		m.SelectedZoneID = items[m.CursorIdx].ZoneID
+	}
+
+	if m.CursorIdx < m.ScrollY {
+		m.ScrollY = m.CursorIdx
+	} else if m.CursorIdx >= m.ScrollY+innerH {
+		m.ScrollY = m.CursorIdx - innerH + 1
+	}
+	maxScrollY := len(items) - innerH
+	if maxScrollY < 0 {
+		maxScrollY = 0
+	}
+	if m.ScrollY > maxScrollY {
+		m.ScrollY = maxScrollY
+	}
+	if m.ScrollY < 0 {
+		m.ScrollY = 0
+	}
+
+	endIdx := m.ScrollY + innerH
+	if endIdx > len(items) {
+		endIdx = len(items)
+	}
+	visibleItems := items[m.ScrollY:endIdx]
+
+	var contentLines []string
+	for _, item := range visibleItems {
+		clippedText := clipAndPadText(item.Text, m.ScrollX, innerW)
+		styled := item.Style.Render(clippedText)
+		marked := zone.Mark(item.ZoneID, styled)
+		contentLines = append(contentLines, borderStyle.Render("│")+marked+borderStyle.Render("│"))
+	}
+
+	for len(contentLines) < innerH {
+		emptyLine := borderStyle.Render("│") + strings.Repeat(" ", innerW) + borderStyle.Render("│")
+		contentLines = append(contentLines, emptyLine)
+	}
+
+	bottomBorder := borderStyle.Render("╰" + strings.Repeat("─", innerW) + "╯")
+
+	allLines := append([]string{topBorder}, contentLines...)
+	allLines = append(allLines, bottomBorder)
+
+	return strings.Join(allLines, "\n")
+}
+
+func clipAndPadText(s string, startX, maxW int) string {
+	runes := []rune(s)
+	col := 0
+	startIdx := 0
+	for i, r := range runes {
+		w := lipgloss.Width(string(r))
+		if w <= 0 {
+			w = 1
+		}
+		if col >= startX {
+			startIdx = i
+			break
+		}
+		col += w
+		startIdx = i + 1
+	}
+
+	var sb strings.Builder
+	currentWidth := 0
+
+	for i := startIdx; i < len(runes); i++ {
+		r := runes[i]
+		w := lipgloss.Width(string(r))
+		if w <= 0 {
+			w = 1
+		}
+
+		if currentWidth+w > maxW {
+			break
+		}
+
+		sb.WriteRune(r)
+		currentWidth += w
+	}
+
+	sub := sb.String()
+	if currentWidth < maxW {
+		sub = sub + strings.Repeat(" ", maxW-currentWidth)
+	}
+
+	return sub
+}

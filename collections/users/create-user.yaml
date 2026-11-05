@@ -1,0 +1,12 @@
+id: create-user
+name: Create user
+method: POST
+url: https://api.example.com/users
+headers:
+  Accept: application/json
+  Content-Type: application/json
+body: |
+  {
+    "name": "Ada Lovelace",
+    "email": "ada@example.com"
+  }

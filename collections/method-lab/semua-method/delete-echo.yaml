@@ -1,0 +1,17 @@
+id: delete-echo
+name: DELETE echo (query force)
+method: DELETE
+url: http://localhost:8084/api/echo
+params_list:
+    - key: id
+      value: "101"
+    - key: force
+      value: "true"
+headers_list:
+    - key: Accept
+      value: application/json
+body_spec:
+    type: none
+auth:
+    type: none
+    add_to: header

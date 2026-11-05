@@ -1,0 +1,9 @@
+id: login
+name: login
+method: POST
+url: localhost:8080/api/users
+body: |-
+    {
+     "name":"admin",
+     "email":"password123"
+    }

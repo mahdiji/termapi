@@ -1,0 +1,19 @@
+id: login
+name: POST login (ambil token)
+method: POST
+url: http://localhost:8084/api/login
+headers_list:
+    - key: Accept
+      value: application/json
+    - key: Content-Type
+      value: application/json
+body_spec:
+    type: json
+    raw: |-
+        {
+          "username": "admin",
+          "password": "password123"
+        }
+auth:
+    type: none
+    add_to: header

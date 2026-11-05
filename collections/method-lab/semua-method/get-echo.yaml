@@ -1,0 +1,21 @@
+id: get-echo-query-header
+name: GET echo (query + header)
+method: GET
+url: http://localhost:8084/api/echo
+params_list:
+    - key: q
+      value: terminal
+    - key: limit
+      value: "5"
+headers_list:
+    - key: Accept
+      value: application/json
+    - key: X-Request-Id
+      value: req-get-001
+body_spec:
+    type: none
+auth:
+    type: none
+    add_to: header
+cookies:
+    - {}

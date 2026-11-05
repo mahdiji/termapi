@@ -1,0 +1,6 @@
+id: get-user
+name: Get user by ID
+method: GET
+url: https://api.example.com/users/1
+headers:
+  Accept: application/json

@@ -1,0 +1,17 @@
+# Binary hasil build
+/termapi
+/mockserver
+
+# State lokal dan data pribadi
+.termapi/
+.token-optimizer/
+/pin.txt
+/pin_125.txt
+/graphify-out/
+
+# Dokumen dan konfigurasi khusus AI
+CLAUDE.md
+AGENTS.md
+.codebuddy/
+.commandcode/
+.gemini/

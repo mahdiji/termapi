@@ -1,0 +1,17 @@
+id: bass
+name: bass
+method: GET
+url: localhost:8083/
+params_list:
+    - key: sssssssssssss
+      value: ssssssssssssss
+      description: sssssssssssss
+headers_list:
+    - {}
+body_spec:
+    type: none
+auth:
+    type: none
+    add_to: header
+cookies:
+    - {}
